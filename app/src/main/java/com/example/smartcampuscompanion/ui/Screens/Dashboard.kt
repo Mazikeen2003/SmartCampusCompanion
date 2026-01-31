@@ -1,10 +1,24 @@
 package com.example.smartcampuscompanion.ui.Screens
 
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun DashboardScreen() {
-    Text(text = "Dashboard Screen")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Welcome to the Dashboard",
+            fontSize = 24.sp
+        )
+    }
 }
-
