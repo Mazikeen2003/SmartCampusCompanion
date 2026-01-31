@@ -11,7 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.smartcampuscompanion.ui.Screens.DashboardScreen
+//import com.example.smartcampuscompanion.ui.Screens.DashboardScreen
+import com.example.smartcampuscompanion.ui.screens.DashboardScreen
 import com.example.smartcampuscompanion.ui.theme.SmartCampusCompanionTheme
 
 class MainActivity : ComponentActivity() {
