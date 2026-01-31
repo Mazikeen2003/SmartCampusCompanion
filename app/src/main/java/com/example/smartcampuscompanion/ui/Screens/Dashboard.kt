@@ -45,8 +45,8 @@ fun DashboardScreen() {
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBBDEFB)),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    shape = RoundedCornerShape(12.dp)
+                        .padding(bottom = 20.dp),
+                    shape = RoundedCornerShape(16.dp) // increased rounding
                 ) {
                     Text("Campus Information", color = Color.Black, fontWeight = FontWeight.SemiBold)
                 }
@@ -56,7 +56,7 @@ fun DashboardScreen() {
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBBDEFB)),
                     modifier = Modifier
                         .fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(16.dp) // increased rounding
                 ) {
                     Text("Logout", color = Color.Black, fontWeight = FontWeight.SemiBold)
                 }
@@ -81,31 +81,31 @@ fun DashboardScreen() {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(24.dp),
+                    .padding(horizontal = 32.dp, vertical = 28.dp), // increased padding
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
                 Text(
                     text = "Welcome to the Dashboard",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 32.dp)
+                    fontSize = 30.sp, // slightly larger
+                    fontWeight = FontWeight.ExtraBold,
+                    modifier = Modifier.padding(bottom = 36.dp)
                 )
 
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(180.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                        .height(200.dp), // taller card
+                    shape = RoundedCornerShape(18.dp), // slightly rounder
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFD6EAF8)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 10.dp) // slightly higher
                 ) {
                     Box(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "Main Dashboard Content Area",
-                            fontSize = 20.sp,
+                            fontSize = 22.sp, // slightly bigger
                             fontWeight = FontWeight.Medium
                         )
                     }
