@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,7 +35,7 @@ import com.example.smartcampuscompanion.ui.theme.SmartCampusCompanionTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginRegisterScreen() {
-    var tabIndex by remember { mutableStateOf(0) }
+    var tabIndex by remember { mutableIntStateOf(0) }
     val tabs = listOf("Login", "Register")
 
     Column(
@@ -82,21 +83,13 @@ fun LoginTab() {
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-            )
+            label = { Text("Email") }
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-            )
+            label = { Text("Password") }
         )
         Spacer(modifier = Modifier.height(32.dp))
         Button(
@@ -122,31 +115,19 @@ fun RegisterTab() {
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-            )
+            label = { Text("Email") }
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-            )
+            label = { Text("Password") }
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = { Text("Confirm Password") },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-            )
+            label = { Text("Confirm Password") }
         )
         Spacer(modifier = Modifier.height(32.dp))
         Button(
