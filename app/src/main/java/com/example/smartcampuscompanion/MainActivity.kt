@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.smartcampuscompanion.ui.screens.LoginRegisterScreen
+import com.example.smartcampuscompanion.ui.Screens.LoginRegisterScreen
 import com.example.smartcampuscompanion.ui.theme.SmartCampusCompanionTheme
 
 class MainActivity : ComponentActivity() {
