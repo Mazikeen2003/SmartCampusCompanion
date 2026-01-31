@@ -2,6 +2,7 @@ package com.example.smartcampuscompanion.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -30,7 +31,7 @@ import com.example.smartcampuscompanion.ui.theme.SmartCampusCompanionTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen() {
+fun LoginScreen(onRegisterClick: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -75,6 +76,12 @@ fun LoginScreen() {
         ) {
             Text(text = "Login")
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Don't have an account? Register",
+            modifier = Modifier.clickable { onRegisterClick() },
+            color = MaterialTheme.colorScheme.primary
+        )
     }
 }
 
@@ -82,7 +89,7 @@ fun LoginScreen() {
 @Composable
 fun LoginScreenPreview() {
     SmartCampusCompanionTheme {
-        LoginScreen()
+        LoginScreen(onRegisterClick = {})
     }
 }
 
@@ -90,6 +97,6 @@ fun LoginScreenPreview() {
 @Composable
 fun LoginScreenDarkPreview() {
     SmartCampusCompanionTheme(darkTheme = true) {
-        LoginScreen()
+        LoginScreen(onRegisterClick = {})
     }
 }
