@@ -66,4 +66,32 @@ fun DashboardScreen() {
                 }
             }
         }
-    ) {
+    ) { Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Dashboard") },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { scope.launch { drawerState.open() } }
+                    ) {
+                        Icon(Icons.Default.Menu, contentDescription = "Menu")
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            // Welcome Text
+            Text(
+                text = "Welcome to the Dashboard",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 32.dp)
+            )
