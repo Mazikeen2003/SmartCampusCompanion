@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            SmartCampusCompanionTheme(darkTheme = true) {
+            SmartCampusCompanionTheme(darkTheme = false) {
                 val navController = rememberNavController()
                 val authViewModel: AuthViewModel = viewModel()
                 NavHost(navController = navController, startDestination = "login_register") {

@@ -2,33 +2,12 @@ package com.example.smartcampuscompanion.ui.Screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -66,7 +45,9 @@ fun LoginRegisterScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         Card(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(), // Card takes full width to allow centering inside
             elevation = CardDefaults.cardElevation(8.dp)
         ) {
             TabRow(selectedTabIndex = tabIndex) {
@@ -76,7 +57,13 @@ fun LoginRegisterScreen(
                         onClick = { tabIndex = index })
                 }
             }
-            Column(modifier = Modifier.padding(16.dp)) {
+            // Column inside Card must fill width and align center
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 when (tabIndex) {
                     0 -> LoginTab(authViewModel, onLoginSuccess)
                     1 -> RegisterTab(authViewModel, onRegisterSuccess)
@@ -95,19 +82,22 @@ fun LoginTab(authViewModel: AuthViewModel, onLoginSuccess: () -> Unit) {
     var error by remember { mutableStateOf<String?>(null) }
 
     Column(
+        modifier = Modifier.fillMaxWidth(), // Fill width to center items
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") }
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth(0.9f) // Center it by taking 90% of available width
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
+            modifier = Modifier.fillMaxWidth(0.9f),
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
@@ -129,6 +119,7 @@ fun LoginTab(authViewModel: AuthViewModel, onLoginSuccess: () -> Unit) {
                     error = "Invalid credentials"
                 }
             },
+            modifier = Modifier.padding(bottom = 8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(text = "Login")
@@ -143,23 +134,25 @@ fun RegisterTab(authViewModel: AuthViewModel, onRegisterSuccess: () -> Unit) {
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var confirmPasswordVisible by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
 
     Column(
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") }
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth(0.9f)
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
+            modifier = Modifier.fillMaxWidth(0.9f),
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
@@ -173,13 +166,8 @@ fun RegisterTab(authViewModel: AuthViewModel, onRegisterSuccess: () -> Unit) {
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
             label = { Text("Confirm Password") },
-            visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                val image = if (confirmPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
-                    Icon(imageVector = image, contentDescription = "toggle password visibility")
-                }
-            }
+            modifier = Modifier.fillMaxWidth(0.9f),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
         )
         error?.let {
             Spacer(modifier = Modifier.height(8.dp))
@@ -189,7 +177,7 @@ fun RegisterTab(authViewModel: AuthViewModel, onRegisterSuccess: () -> Unit) {
         Button(
             onClick = {
                 if (password == confirmPassword) {
-                    if(authViewModel.register(User(email, password))){
+                    if (authViewModel.register(User(email, password))) {
                         onRegisterSuccess()
                     } else {
                         error = "User already exists"
@@ -198,29 +186,10 @@ fun RegisterTab(authViewModel: AuthViewModel, onRegisterSuccess: () -> Unit) {
                     error = "Passwords do not match"
                 }
             },
+            modifier = Modifier.padding(bottom = 8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(text = "Register")
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginRegisterScreenPreview() {
-    SmartCampusCompanionTheme {
-        // You can uncomment and mock the ViewModel for previews
-        // val authViewModel = AuthViewModel()
-        // LoginRegisterScreen(authViewModel, onLoginSuccess = {}, onRegisterSuccess = {})
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginRegisterScreenDarkPreview() {
-    SmartCampusCompanionTheme(darkTheme = true) {
-        // You can uncomment and mock the ViewModel for previews
-        // val authViewModel = AuthViewModel()
-        // LoginRegisterScreen(authViewModel, onLoginSuccess = {}, onRegisterSuccess = {})
     }
 }
