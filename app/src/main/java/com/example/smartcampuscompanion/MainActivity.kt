@@ -9,7 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.smartcampuscompanion.ui.Screens.AuthViewModel
-import com.example.smartcampuscompanion.ui.Screens.Dashboard
+import com.example.smartcampuscompanion.ui.Screens.DashboardScreen
+//import com.example.smartcampuscompanion.ui.Screens.DashboardScreen
 import com.example.smartcampuscompanion.ui.Screens.LoginRegisterScreen
 import com.example.smartcampuscompanion.ui.theme.SmartCampusCompanionTheme
 
@@ -30,14 +31,13 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("dashboard") {
-                        Dashboard(onLogout = {
-                            navController.navigate("login_register") {
-                                popUpTo("login_register") { inclusive = true }
-                            }
-                        })
+                        DashboardScreen()
                     }
                 }
             }
         }
+
+
+
     }
 }

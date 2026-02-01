@@ -31,8 +31,8 @@ import com.example.smartcampuscompanion.ui.theme.SmartCampusCompanionTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(onRegisterClick: () -> Unit) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("admin") }
+    var password by remember { mutableStateOf("admin123") }
 
     Column(
         modifier = Modifier
@@ -62,7 +62,7 @@ fun LoginScreen(onRegisterClick: () -> Unit) {
         )
         Spacer(modifier = Modifier.height(32.dp))
         Button(
-            onClick = { /* Handle login */ },
+            onClick = { },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(text = "Login")

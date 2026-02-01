@@ -48,7 +48,7 @@ fun RegisterScreen(onLoginClick: () -> Unit) {
             modifier = Modifier.size(120.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Create an Account", style = MaterialTheme.typography.headlineSmall)
+        Text(text = "Create an account", style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(32.dp))
         OutlinedTextField(
             value = email,
