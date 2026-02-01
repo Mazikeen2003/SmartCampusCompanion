@@ -12,10 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,37 +27,40 @@ fun DashboardScreen() {
         drawerContent = {
             Column(
                 modifier = Modifier
-                    .padding(20.dp)
                     .fillMaxHeight()
-                    .background(Color(0xFFE8F4FA), shape = RoundedCornerShape(12.dp))
+                    .width(280.dp)
+                    .padding(20.dp)
+                    .background(
+                        MaterialTheme.colorScheme.surface,
+                        RoundedCornerShape(16.dp)
+                    )
             ) {
+
+                // Drawer Title
                 Text(
-                    text = "Dashboard Menu",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF0D47A1),
-                    modifier = Modifier.padding(bottom = 36.dp)
+                    text = "Dashboard",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 32.dp)
                 )
 
                 Button(
                     onClick = { },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9)),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 18.dp),
-                    shape = RoundedCornerShape(16.dp)
+                        .padding(bottom = 16.dp)
                 ) {
-                    Text("Campus Information", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text("Information Management")
                 }
 
                 Button(
                     onClick = { },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9)),
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
                 ) {
-                    Text("Logout", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text("Logout")
                 }
             }
         }
@@ -69,45 +70,46 @@ fun DashboardScreen() {
                 TopAppBar(
                     title = { Text("Dashboard") },
                     navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                        IconButton(
+                            onClick = { scope.launch { drawerState.open() } }
+                        ) {
                             Icon(Icons.Default.Menu, contentDescription = "Menu")
                         }
-                    },
-                    colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Color(0xFF0D47A1))
+                    }
                 )
-            },
-            contentWindowInsets = WindowInsets(0,0,0,0)
-        ) { innerPadding ->
+            }
+        ) { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(horizontal = 36.dp, vertical = 32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
+                    .padding(padding)
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
+                // Welcome Text
                 Text(
                     text = "Welcome to the Dashboard",
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    modifier = Modifier.padding(bottom = 40.dp)
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 32.dp)
                 )
 
+                // Main Dashboard Content
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(220.dp),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFD0E6F9)),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+                    elevation = CardDefaults.cardElevation(8.dp)
                 ) {
                     Box(
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "Main Dashboard Content Area",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Medium
+                            style = MaterialTheme.typography.titleMedium
                         )
                     }
                 }
