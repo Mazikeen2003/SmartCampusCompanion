@@ -36,4 +36,34 @@ fun DashboardScreen() {
                         MaterialTheme.colorScheme.surface,
                         RoundedCornerShape(16.dp)
                     )
-            )
+            )   {
+
+                // Drawer Title
+                Text(
+                    text = "Dashboard",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 32.dp)
+                )
+
+                Button(
+                    onClick = { },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                ) {
+                    Text("Information Management")
+                }
+
+                Button(
+                    onClick = { },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Logout")
+                }
+            }
+        }
+    ) {
