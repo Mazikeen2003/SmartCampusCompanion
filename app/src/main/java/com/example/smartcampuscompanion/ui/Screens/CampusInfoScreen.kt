@@ -1,4 +1,4 @@
-package com.example.smartcampuscompanion.ui.screens
+package com.example.smartcampuscompanion.ui.Screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
