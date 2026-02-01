@@ -94,4 +94,10 @@ fun DashboardScreen() {
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 32.dp)
-            )
+            ) Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp),
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(8.dp)
+            ) {
