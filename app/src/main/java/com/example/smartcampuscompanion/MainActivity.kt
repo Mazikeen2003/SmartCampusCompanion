@@ -4,13 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.smartcampuscompanion.ui.Screens.AuthViewModel
+import com.example.smartcampuscompanion.ui.Screens.Dashboard
+import com.example.smartcampuscompanion.ui.Screens.LoginRegisterScreen
 import com.example.smartcampuscompanion.ui.theme.SmartCampusCompanionTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,10 +18,26 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            SmartCampusCompanionTheme {
-
+            SmartCampusCompanionTheme(darkTheme = true) {
+                val navController = rememberNavController()
+                val authViewModel: AuthViewModel = viewModel()
+                NavHost(navController = navController, startDestination = "login_register") {
+                    composable("login_register") {
+                        LoginRegisterScreen(
+                            authViewModel = authViewModel,
+                            onLoginSuccess = { navController.navigate("dashboard") },
+                            onRegisterSuccess = { navController.navigate("dashboard") }
+                        )
+                    }
+                    composable("dashboard") {
+                        Dashboard(onLogout = {
+                            navController.navigate("login_register") {
+                                popUpTo("login_register") { inclusive = true }
+                            }
+                        })
+                    }
+                }
             }
         }
     }
 }
-
