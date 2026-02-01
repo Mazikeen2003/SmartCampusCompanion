@@ -2,118 +2,223 @@ package com.example.smartcampuscompanion.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+
+data class DepartmentData(
+    val name: String,
+    val bgColor: Color
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen() {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val departments = listOf(
+        DepartmentData("College of Engineering", Color(0xFFE3F2FD)),
+        DepartmentData("School of Business", Color(0xFFF1F8E9)),
+        DepartmentData("Information Technology", Color(0xFFFFF3E0)),
+        DepartmentData("Architecture & Design", Color(0xFFF3E5F5))
+    )
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(280.dp)
-                    .padding(20.dp)
-                    .background(
-                        MaterialTheme.colorScheme.surface,
-                        RoundedCornerShape(16.dp)
-                    )
+            ModalDrawerSheet(
+                modifier = Modifier.width(310.dp),
+                drawerContainerColor = MaterialTheme.colorScheme.surface,
+                drawerTonalElevation = 0.dp
             ) {
-
-                // Drawer Title
-                Text(
-                    text = "Dashboard",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 32.dp)
-                )
-
-                Button(
-                    onClick = { },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                ) {
-                    Text("Information Management")
-                }
-
-                Button(
-                    onClick = { },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error
+                Column(modifier = Modifier.fillMaxHeight().padding(horizontal = 16.dp)) {
+                    Spacer(Modifier.height(64.dp))
+                    Text(
+                        text = "Smart Campus",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Black,
+                        color = MaterialTheme.colorScheme.primary
                     )
-                ) {
-                    Text("Logout")
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 24.dp))
+
+                    DrawerItem("Information Management", Icons.Default.Info) {
+                        scope.launch { drawerState.close() }
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
+                    DrawerItem("Sign Out", Icons.Default.ExitToApp, MaterialTheme.colorScheme.error) { }
+                    Spacer(Modifier.height(32.dp))
                 }
             }
         }
     ) {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text("Dashboard") },
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(
+                            "DASHBOARD",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 2.sp
+                        )
+                    },
                     navigationIcon = {
-                        IconButton(
-                            onClick = { scope.launch { drawerState.open() } }
-                        ) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                            Icon(Icons.Default.Menu, contentDescription = null)
                         }
                     }
                 )
             }
         ) { padding ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(padding),
+                contentPadding = PaddingValues(24.dp)
             ) {
+                item {
+                    Text(
+                        text = "Welcome,",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                    )
+                    Text(
+                        text = "Smart Campus",
+                        style = MaterialTheme.typography.displayMedium,
+                        fontWeight = FontWeight.Black,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
 
-                // Welcome Text
-                Text(
-                    text = "Welcome to the Dashboard",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 32.dp)
-                )
+                    Spacer(Modifier.height(32.dp))
 
-                // Main Dashboard Content
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(220.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(8.dp)
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(140.dp),
+                        shape = MaterialTheme.shapes.extraLarge,
                     ) {
-                        Text(
-                            text = "Main Dashboard Content Area",
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.horizontalGradient(
+                                        colors = listOf(
+                                            MaterialTheme.colorScheme.primary,
+                                            MaterialTheme.colorScheme.tertiary
+                                        )
+                                    )
+                                )
+                                .padding(24.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Text(
+                                "Main\nDashboard",
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
                     }
+
+                    Spacer(Modifier.height(32.dp))
+
+                    Text(
+                        text = "Departments",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Spacer(Modifier.height(16.dp))
+                }
+
+                items(departments) { dept ->
+                    DepartmentButton(
+                        name = dept.name,
+                        backgroundColor = dept.bgColor
+                    ) { }
                 }
             }
         }
     }
+}
+
+@Composable
+fun DepartmentButton(
+    name: String,
+    backgroundColor: Color,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp)
+            .height(85.dp),
+        shape = MaterialTheme.shapes.large,
+        contentPadding = PaddingValues(horizontal = 24.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = backgroundColor,
+            contentColor = Color(0xFF1A1C1E)
+        ),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = name,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.ExtraBold,
+                modifier = Modifier.weight(1f)
+            )
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = Color.Black.copy(alpha = 0.6f)
+            )
+        }
+    }
+}
+
+@Composable
+fun DrawerItem(
+    label: String,
+    icon: ImageVector,
+    color: Color = MaterialTheme.colorScheme.onSurface,
+    onClick: () -> Unit
+) {
+    NavigationDrawerItem(
+        label = { Text(label, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold) },
+        selected = false,
+        onClick = onClick,
+        icon = { Icon(icon, contentDescription = null) },
+        modifier = Modifier.height(56.dp),
+        colors = NavigationDrawerItemDefaults.colors(
+            unselectedContainerColor = Color.Transparent,
+            unselectedIconColor = color,
+            unselectedTextColor = color
+        )
+    )
 }
