@@ -55,11 +55,12 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
 
     // Material icons for visibility toggle
-    implementation("androidx.compose.material:material-icons-core:1.5.1")
-    implementation("androidx.compose.material:material-icons-extended:1.5.1")
+    implementation("androidx.compose.material:material-icons-core:1.6.7")
+    implementation("androidx.compose.material:material-icons-extended:1.6.7")
     implementation(libs.androidx.navigation.compose)
 
     testImplementation(libs.junit)

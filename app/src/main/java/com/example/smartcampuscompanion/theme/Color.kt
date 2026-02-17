@@ -1,4 +1,4 @@
-package com.example.smartcampuscompanion.ui.theme
+package com.example.smartcampuscompanion.theme
 
 import androidx.compose.ui.graphics.Color
 

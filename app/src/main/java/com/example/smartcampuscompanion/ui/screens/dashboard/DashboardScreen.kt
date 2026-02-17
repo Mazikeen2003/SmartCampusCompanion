@@ -1,4 +1,4 @@
-package com.example.smartcampuscompanion.ui.Screens
+package com.example.smartcampuscompanion.ui.screens.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,26 +19,23 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.smartcampuscompanion.data.entity.Department
+import com.example.smartcampuscompanion.ui.screens.campus.CampusInfoScreen
 import kotlinx.coroutines.launch
-
-data class DepartmentData(
-    val name: String,
-    val bgColor: Color
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen() {
+fun DashboardScreen(onLogout: () -> Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     var currentScreen by remember { mutableStateOf("main") }
 
     val departments = listOf(
-        DepartmentData("College of Engineering", Color(0xFFE3F2FD)),
-        DepartmentData("School of Business", Color(0xFFF1F8E9)),
-        DepartmentData("Information Technology", Color(0xFFFFF3E0)),
-        DepartmentData("Architecture & Design", Color(0xFFF3E5F5))
+        Department("College of Engineering", Color(0xFFE3F2FD)),
+        Department("School of Business", Color(0xFFF1F8E9)),
+        Department("Information Technology", Color(0xFFFFF3E0)),
+        Department("Architecture & Design", Color(0xFFF3E5F5))
     )
 
     ModalNavigationDrawer(
@@ -67,8 +64,8 @@ fun DashboardScreen() {
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
-                    DrawerItem("Sign Out", Icons.Default.ExitToApp, MaterialTheme.colorScheme.error) { }
-                    Spacer(Modifier.height(32.dp))
+                    DrawerItem("Sign Out", Icons.Default.ExitToApp, MaterialTheme.colorScheme.error) { onLogout() }
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
             }
         }
@@ -95,7 +92,7 @@ fun DashboardScreen() {
             Box(modifier = Modifier.fillMaxSize().padding(padding)) {
                 when (currentScreen) {
                     "main" -> MainDashboardContent(departments)
-                    "campus_info" -> CampusInfoScreen() // Separate file
+                    "campus_info" -> CampusInfoScreen(onBackClick = { currentScreen = "main" })
                 }
             }
         }
@@ -103,7 +100,7 @@ fun DashboardScreen() {
 }
 
 @Composable
-fun MainDashboardContent(departments: List<DepartmentData>) {
+fun MainDashboardContent(departments: List<Department>) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -161,7 +158,7 @@ fun MainDashboardContent(departments: List<DepartmentData>) {
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Spacer(Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         items(departments) { dept ->

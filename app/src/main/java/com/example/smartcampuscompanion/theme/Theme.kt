@@ -1,11 +1,10 @@
-package com.example.smartcampuscompanion.ui.theme
+package com.example.smartcampuscompanion.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import com.example.smartcampuscompanion.ui.theme.Typography
 
 private val DarkColorScheme = darkColorScheme(
     primary = PrimaryDark,
