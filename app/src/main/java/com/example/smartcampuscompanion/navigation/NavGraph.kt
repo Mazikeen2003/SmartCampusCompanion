@@ -1,6 +1,7 @@
 package com.example.smartcampuscompanion.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -16,6 +17,7 @@ import com.example.smartcampuscompanion.ui.screens.tasks.AddEditTaskScreen
 import com.example.smartcampuscompanion.ui.screens.auth.LoginRegisterScreen
 import com.example.smartcampuscompanion.ui.screens.dashboard.DashboardScreen
 import com.example.smartcampuscompanion.ui.screens.tasks.TaskListScreen
+import com.example.smartcampuscompanion.ui.screens.campus.CampusInfoScreen
 import com.example.smartcampuscompanion.ui.viewmodel.AuthViewModel
 import com.example.smartcampuscompanion.ui.viewmodel.TaskViewModel
 
@@ -23,17 +25,19 @@ import com.example.smartcampuscompanion.ui.viewmodel.TaskViewModel
 fun NavGraph(navController: NavHostController) {
     val authViewModel: AuthViewModel = viewModel()
     val context = LocalContext.current
-
-    // Manual injection of TaskViewModel
-    val database = AppDatabase.getDatabase(context)
-    val repository = TaskRepository(database.taskDao())
-    val taskViewModelFactory = object : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return TaskViewModel(repository) as T
+    
+    // Manual injection of TaskViewModel with performance optimization
+    val database = remember { AppDatabase.getDatabase(context) }
+    val repository = remember { TaskRepository(database.taskDao()) }
+    val taskViewModelFactory = remember {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
+                    @Suppress("UNCHECKED_CAST")
+                    return TaskViewModel(repository) as T
+                }
+                throw IllegalArgumentException("Unknown ViewModel class")
             }
-            throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
 
@@ -85,6 +89,9 @@ fun NavGraph(navController: NavHostController) {
                 taskId = taskId,
                 onSaveDone = { navController.popBackStack() }
             )
+        }
+        composable(Routes.CAMPUS_INFO) {
+            CampusInfoScreen(onBackClick = { navController.popBackStack() })
         }
     }
 }
