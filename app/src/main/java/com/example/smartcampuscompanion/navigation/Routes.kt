@@ -1,4 +1,6 @@
 package com.example.smartcampuscompanion.navigation
 
-class Routes {
+object Routes {
+    const val LOGIN_REGISTER = "login_register"
+    const val DASHBOARD = "dashboard"
 }
