@@ -30,6 +30,7 @@ fun NavGraph(navController: NavHostController) {
     val taskViewModelFactory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
                 return TaskViewModel(repository) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
@@ -52,7 +53,8 @@ fun NavGraph(navController: NavHostController) {
                 onLogout = {
                     authViewModel.logout()
                     navController.navigate(Routes.LOGIN_REGISTER) {
-                        popUpTo(navController.graph.id) { inclusive = true } }
+                        popUpTo(navController.graph.id) { inclusive = true }
+                    }
                 },
                 onNavigateToTasks = { navController.navigate(Routes.TASK_LIST) }
             )
@@ -62,7 +64,7 @@ fun NavGraph(navController: NavHostController) {
             TaskListScreen(
                 viewModel = taskViewModel,
                 onAddClick = { navController.navigate(Routes.ADD_TASK) },
-                onEditClick = { taskId -> navController.navigate("edit_task/$taskId") }
+                onEditClick = { taskId -> navController.navigate(Routes.editTask(taskId)) }
             )
         }
         composable(Routes.ADD_TASK) {
