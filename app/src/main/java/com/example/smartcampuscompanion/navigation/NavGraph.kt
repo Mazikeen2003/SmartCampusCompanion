@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.smartcampuscompanion.data.database.AppDatabase
 import com.example.smartcampuscompanion.data.repository.TaskRepository
+import com.example.smartcampuscompanion.ui.screens.tasks.AddEditTaskScreen
 import com.example.smartcampuscompanion.ui.screens.auth.LoginRegisterScreen
 import com.example.smartcampuscompanion.ui.screens.dashboard.DashboardScreen
 import com.example.smartcampuscompanion.ui.screens.tasks.TaskListScreen
@@ -59,8 +60,15 @@ fun NavGraph(navController: NavHostController) {
             val taskViewModel: TaskViewModel = viewModel(factory = taskViewModelFactory)
             TaskListScreen(
                 viewModel = taskViewModel,
-                onAddClick = {  },
-                onEditClick = {  }
+                onAddClick = { navController.navigate(Routes.ADD_TASK) },
+                onEditClick = { /* Will be added in next commit */ }
+            )
+        }
+        composable(Routes.ADD_TASK) {
+            val taskViewModel: TaskViewModel = viewModel(factory = taskViewModelFactory)
+            AddEditTaskScreen(
+                viewModel = taskViewModel,
+                onSaveDone = { navController.popBackStack() }
             )
         }
     }
