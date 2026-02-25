@@ -1,3 +1,11 @@
 package com.example.smartcampuscompanion.data.entity
 
-data class User(val email: String, val password: String)
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "users")
+data class User(
+    @PrimaryKey
+    val email: String,
+    val password: String
+)
