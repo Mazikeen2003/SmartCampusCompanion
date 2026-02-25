@@ -1,6 +1,7 @@
 package com.example.smartcampuscompanion.data.dao
 
 import androidx.room.*
+import androidx.room.Dao
 import com.example.smartcampuscompanion.data.entity.Task
 import kotlinx.coroutines.flow.Flow
 
