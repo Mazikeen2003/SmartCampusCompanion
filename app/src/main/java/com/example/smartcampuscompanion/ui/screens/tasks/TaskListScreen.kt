@@ -1,4 +1,5 @@
-package com.example.smartcampuscompanion.ui.screens.Tasks
+package com.example.smartcampuscompanion.ui.screens.tasks
+//package com.example.smartcampuscompanion.ui.screens.tasks
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn

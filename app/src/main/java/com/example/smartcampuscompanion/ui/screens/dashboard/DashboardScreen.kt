@@ -9,6 +9,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Task
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,17 +26,20 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen(onLogout: () -> Unit) {
+fun DashboardScreen(
+    onLogout: () -> Unit,
+    onNavigateToTasks: () -> Unit = {}
+) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     var currentScreen by remember { mutableStateOf("main") }
 
     val departments = listOf(
-        Department("College of Engineering", Color(0xFFE3F2FD)),
-        Department("School of Business", Color(0xFFF1F8E9)),
-        Department("Information Technology", Color(0xFFFFF3E0)),
-        Department("Architecture & Design", Color(0xFFF3E5F5))
+        Department("College of Engineering", 0xFFE3F2FD),
+        Department("School of Business", 0xFFF1F8E9),
+        Department("Information Technology", 0xFFFFF3E0),
+        Department("Architecture & Design", 0xFFF3E5F5)
     )
 
     ModalNavigationDrawer(
@@ -55,6 +59,13 @@ fun DashboardScreen(onLogout: () -> Unit) {
                         color = MaterialTheme.colorScheme.primary
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 24.dp))
+
+                    DrawerItem("Tasks", Icons.Default.Task) {
+                        scope.launch {
+                            drawerState.close()
+                            onNavigateToTasks()
+                        }
+                    }
 
                     DrawerItem("Campus Info", Icons.Default.Info) {
                         scope.launch {
@@ -91,7 +102,7 @@ fun DashboardScreen(onLogout: () -> Unit) {
         ) { padding ->
             Box(modifier = Modifier.fillMaxSize().padding(padding)) {
                 when (currentScreen) {
-                    "main" -> MainDashboardContent(departments)
+                    "main" -> MainDashboardContent(departments, onNavigateToTasks)
                     "campus_info" -> CampusInfoScreen(onBackClick = { currentScreen = "main" })
                 }
             }
@@ -100,7 +111,10 @@ fun DashboardScreen(onLogout: () -> Unit) {
 }
 
 @Composable
-fun MainDashboardContent(departments: List<Department>) {
+fun MainDashboardContent(
+    departments: List<Department>,
+    onNavigateToTasks: () -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -122,6 +136,7 @@ fun MainDashboardContent(departments: List<Department>) {
             Spacer(Modifier.height(32.dp))
 
             Card(
+                onClick = onNavigateToTasks,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(140.dp),
@@ -142,7 +157,7 @@ fun MainDashboardContent(departments: List<Department>) {
                     contentAlignment = Alignment.CenterStart
                 ) {
                     Text(
-                        "Main\nDashboard",
+                        "Manage\nTasks",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -164,7 +179,7 @@ fun MainDashboardContent(departments: List<Department>) {
         items(departments) { dept ->
             DepartmentButton(
                 name = dept.name,
-                backgroundColor = dept.bgColor
+                backgroundColor = Color(dept.bgColor)
             ) { }
         }
     }

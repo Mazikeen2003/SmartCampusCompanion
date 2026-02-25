@@ -1,4 +1,4 @@
-package com.example.smartcampuscompanion.ui.screens.Tasks
+package com.example.smartcampuscompanion.ui.screens.tasks
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
