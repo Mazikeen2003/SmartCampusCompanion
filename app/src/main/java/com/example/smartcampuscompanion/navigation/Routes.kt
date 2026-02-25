@@ -5,4 +5,5 @@ object Routes {
     const val DASHBOARD = "dashboard"
     const val TASK_LIST = "task_list"
     const val ADD_TASK = "add_task"
+    const val EDIT_TASK = "edit_task/{taskId}"
 }
