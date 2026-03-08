@@ -1,4 +1,34 @@
 package com.example.smartcampuscompanion.data.dao
 
-class AnnouncementDao {
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
+import com.example.smartcampuscompanion.data.entity.Announcement
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface AnnouncementDao {
+
+    @Query("SELECT * FROM announcements ORDER BY date DESC")
+    fun getAllAnnouncements(): Flow<List<Announcement>>
+
+    @Query("SELECT * FROM announcements WHERE id = :announcementId")
+    suspend fun getAnnouncementById(announcementId: Int): Announcement?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAnnouncement(announcement: Announcement)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAnnouncements(announcements: List<Announcement>)
+
+    @Update
+    suspend fun updateAnnouncement(announcement: Announcement)
+
+    @Query("UPDATE announcements SET isRead = 1 WHERE id = :announcementId")
+    suspend fun markAsRead(announcementId: Int)
+
+    @Query("UPDATE announcements SET isRead = 1")
+    suspend fun markAllAsRead()
 }
