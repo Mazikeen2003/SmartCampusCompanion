@@ -1,45 +1,27 @@
 package com.example.smartcampuscompanion.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.smartcampuscompanion.data.database.AppDatabase
-import com.example.smartcampuscompanion.data.repository.TaskRepository
 import com.example.smartcampuscompanion.ui.screens.tasks.AddEditTaskScreen
 import com.example.smartcampuscompanion.ui.screens.auth.LoginRegisterScreen
 import com.example.smartcampuscompanion.ui.screens.dashboard.DashboardScreen
 import com.example.smartcampuscompanion.ui.screens.tasks.TaskListScreen
 import com.example.smartcampuscompanion.ui.screens.campus.CampusInfoScreen
+import com.example.smartcampuscompanion.ui.screens.announcement.AnnouncementScreen
+import com.example.smartcampuscompanion.ui.screens.announcement.AnnouncementDetailScreen
 import com.example.smartcampuscompanion.ui.viewmodel.AuthViewModel
 import com.example.smartcampuscompanion.ui.viewmodel.TaskViewModel
+import com.example.smartcampuscompanion.ui.viewmodel.AnnouncementViewModel
+import com.example.smartcampuscompanion.ui.viewmodel.DepartmentViewModel
 
 @Composable
 fun NavGraph(navController: NavHostController) {
-    val authViewModel: AuthViewModel = viewModel()
-    val context = LocalContext.current
-    
-    // Manual injection of TaskViewModel with performance optimization
-    val database = remember { AppDatabase.getDatabase(context) }
-    val repository = remember { TaskRepository(database.taskDao()) }
-    val taskViewModelFactory = remember {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
-                    @Suppress("UNCHECKED_CAST")
-                    return TaskViewModel(repository) as T
-                }
-                throw IllegalArgumentException("Unknown ViewModel class")
-            }
-        }
-    }
+    val authViewModel: AuthViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
@@ -53,6 +35,7 @@ fun NavGraph(navController: NavHostController) {
             )
         }
         composable(Routes.DASHBOARD) {
+            val departmentViewModel: DepartmentViewModel = hiltViewModel()
             DashboardScreen(
                 onLogout = {
                     authViewModel.logout()
@@ -60,22 +43,26 @@ fun NavGraph(navController: NavHostController) {
                         popUpTo(navController.graph.id) { inclusive = true }
                     }
                 },
-                onNavigateToTasks = { navController.navigate(Routes.TASK_LIST) }
+                onNavigateToTasks = { navController.navigate(Routes.TASK_LIST) },
+                onNavigateToAnnouncements = { navController.navigate(Routes.ANNOUNCEMENT_LIST) },
+                viewModel = departmentViewModel
             )
         }
         composable(Routes.TASK_LIST) {
-            val taskViewModel: TaskViewModel = viewModel(factory = taskViewModelFactory)
+            val taskViewModel: TaskViewModel = hiltViewModel()
             TaskListScreen(
                 viewModel = taskViewModel,
                 onAddClick = { navController.navigate(Routes.ADD_TASK) },
-                onEditClick = { taskId -> navController.navigate(Routes.editTask(taskId)) }
+                onEditClick = { taskId -> navController.navigate(Routes.editTask(taskId)) },
+                onBackClick = { navController.popBackStack() }
             )
         }
         composable(Routes.ADD_TASK) {
-            val taskViewModel: TaskViewModel = viewModel(factory = taskViewModelFactory)
+            val taskViewModel: TaskViewModel = hiltViewModel()
             AddEditTaskScreen(
                 viewModel = taskViewModel,
-                onSaveDone = { navController.popBackStack() }
+                onSaveDone = { navController.popBackStack() },
+                onBackClick = { navController.popBackStack() }
             )
         }
         composable(
@@ -83,15 +70,38 @@ fun NavGraph(navController: NavHostController) {
             arguments = listOf(navArgument("taskId") { type = NavType.IntType })
         ) { backStackEntry ->
             val taskId = backStackEntry.arguments?.getInt("taskId")
-            val taskViewModel: TaskViewModel = viewModel(factory = taskViewModelFactory)
+            val taskViewModel: TaskViewModel = hiltViewModel()
             AddEditTaskScreen(
                 viewModel = taskViewModel,
                 taskId = taskId,
-                onSaveDone = { navController.popBackStack() }
+                onSaveDone = { navController.popBackStack() },
+                onBackClick = { navController.popBackStack() }
             )
         }
         composable(Routes.CAMPUS_INFO) {
             CampusInfoScreen(onBackClick = { navController.popBackStack() })
+        }
+        composable(Routes.ANNOUNCEMENT_LIST) {
+            val announcementViewModel: AnnouncementViewModel = hiltViewModel()
+            AnnouncementScreen(
+                viewModel = announcementViewModel,
+                onAnnouncementClick = { announcementId -> 
+                    navController.navigate(Routes.announcementDetail(announcementId))
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(
+            Routes.ANNOUNCEMENT_DETAIL,
+            arguments = listOf(navArgument("announcementId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val announcementId = backStackEntry.arguments?.getInt("announcementId") ?: 0
+            val announcementViewModel: AnnouncementViewModel = hiltViewModel()
+            AnnouncementDetailScreen(
+                viewModel = announcementViewModel,
+                announcementId = announcementId,
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 }

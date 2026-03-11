@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Announcement
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
@@ -22,25 +23,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.smartcampuscompanion.data.entity.Department
 import com.example.smartcampuscompanion.ui.screens.campus.CampusInfoScreen
+import com.example.smartcampuscompanion.ui.viewmodel.DepartmentViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     onLogout: () -> Unit,
-    onNavigateToTasks: () -> Unit = {}
+    onNavigateToTasks: () -> Unit = {},
+    onNavigateToAnnouncements: () -> Unit = {},
+    viewModel: DepartmentViewModel
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     var currentScreen by remember { mutableStateOf("main") }
-
-    val departments = listOf(
-        Department("College of Engineering", 0xFFE3F2FD),
-        Department("School of Business", 0xFFF1F8E9),
-        Department("Information Technology", 0xFFFFF3E0),
-        Department("Architecture & Design", 0xFFF3E5F5)
-    )
+    
+    val departments by viewModel.departments.collectAsState()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -59,6 +58,13 @@ fun DashboardScreen(
                         color = MaterialTheme.colorScheme.primary
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 24.dp))
+
+                    DrawerItem("Announcements", Icons.Default.Announcement) {
+                        scope.launch {
+                            drawerState.close()
+                            onNavigateToAnnouncements()
+                        }
+                    }
 
                     DrawerItem("Tasks", Icons.Default.Task) {
                         scope.launch {
@@ -102,7 +108,7 @@ fun DashboardScreen(
         ) { padding ->
             Box(modifier = Modifier.fillMaxSize().padding(padding)) {
                 when (currentScreen) {
-                    "main" -> MainDashboardContent(departments, onNavigateToTasks)
+                    "main" -> MainDashboardContent(departments, onNavigateToTasks, onNavigateToAnnouncements)
                     "campus_info" -> CampusInfoScreen(onBackClick = { currentScreen = "main" })
                 }
             }
@@ -113,7 +119,8 @@ fun DashboardScreen(
 @Composable
 fun MainDashboardContent(
     departments: List<Department>,
-    onNavigateToTasks: () -> Unit
+    onNavigateToTasks: () -> Unit,
+    onNavigateToAnnouncements: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -135,33 +142,24 @@ fun MainDashboardContent(
 
             Spacer(Modifier.height(32.dp))
 
-            Card(
-                onClick = onNavigateToTasks,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp),
-                shape = MaterialTheme.shapes.extraLarge,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.horizontalGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primary,
-                                    MaterialTheme.colorScheme.tertiary
-                                )
-                            )
-                        )
-                        .padding(24.dp),
-                    contentAlignment = Alignment.CenterStart
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Card(
+                    onClick = onNavigateToAnnouncements,
+                    modifier = Modifier.weight(1f).height(120.dp),
+                    shape = MaterialTheme.shapes.large,
                 ) {
-                    Text(
-                        "Manage\nTasks",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
+                    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primaryContainer).padding(16.dp), contentAlignment = Alignment.Center) {
+                        Text("Announcements", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    }
+                }
+                Card(
+                    onClick = onNavigateToTasks,
+                    modifier = Modifier.weight(1f).height(120.dp),
+                    shape = MaterialTheme.shapes.large,
+                ) {
+                    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.secondaryContainer).padding(16.dp), contentAlignment = Alignment.Center) {
+                        Text("Tasks", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    }
                 }
             }
 
@@ -180,7 +178,9 @@ fun MainDashboardContent(
             DepartmentButton(
                 name = dept.name,
                 backgroundColor = Color(dept.bgColor)
-            ) { }
+            ) { 
+                // Navigation for specific departments can be added here if needed
+            }
         }
     }
 }
