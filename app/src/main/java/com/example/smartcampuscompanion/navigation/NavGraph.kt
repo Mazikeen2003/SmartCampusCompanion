@@ -20,7 +20,11 @@ import com.example.smartcampuscompanion.ui.viewmodel.AnnouncementViewModel
 import com.example.smartcampuscompanion.ui.viewmodel.DepartmentViewModel
 
 @Composable
-fun NavGraph(navController: NavHostController) {
+fun NavGraph(
+    navController: NavHostController,
+    isDarkMode: Boolean,
+    onThemeToggle: () -> Unit
+) {
     val authViewModel: AuthViewModel = hiltViewModel()
 
     NavHost(
@@ -45,7 +49,9 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onNavigateToTasks = { navController.navigate(Routes.TASK_LIST) },
                 onNavigateToAnnouncements = { navController.navigate(Routes.ANNOUNCEMENT_LIST) },
-                viewModel = departmentViewModel
+                viewModel = departmentViewModel,
+                isDarkMode = isDarkMode,
+                onThemeToggle = onThemeToggle
             )
         }
         composable(Routes.TASK_LIST) {

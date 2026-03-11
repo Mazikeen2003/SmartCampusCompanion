@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.*
 import androidx.navigation.compose.rememberNavController
 import com.example.smartcampuscompanion.navigation.NavGraph
 import com.example.smartcampuscompanion.theme.SmartCampusCompanionTheme
@@ -16,9 +16,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            SmartCampusCompanionTheme(darkTheme = isSystemInDarkTheme()) {
+            var isDarkMode by remember { mutableStateOf(false) }
+            
+            SmartCampusCompanionTheme(darkTheme = isDarkMode) {
                 val navController = rememberNavController()
-                NavGraph(navController = navController)
+                NavGraph(
+                    navController = navController,
+                    isDarkMode = isDarkMode,
+                    onThemeToggle = { isDarkMode = !isDarkMode }
+                )
             }
         }
     }

@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class Department(
     @PrimaryKey
     val name: String,
-    val bgColor: Long
+    val bgColor: Long,
+    val description: String = ""
 )
