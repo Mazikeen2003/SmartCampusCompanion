@@ -5,8 +5,11 @@ import android.content.Context
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
 import com.example.smartcampuscompanion.data.entity.User
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class AuthViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class AuthViewModel @Inject constructor(application: Application) : AndroidViewModel(application) {
     private val sharedPreferences = application.getSharedPreferences("user_session", Context.MODE_PRIVATE)
     private val users = mutableListOf<User>()
     private val registeredUsersKey = "registered_users"

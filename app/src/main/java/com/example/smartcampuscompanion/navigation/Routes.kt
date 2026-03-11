@@ -1,4 +1,13 @@
 package com.example.smartcampuscompanion.navigation
 
-class Routes {
+object Routes {
+    const val LOGIN_REGISTER = "login_register"
+    const val DASHBOARD = "dashboard"
+    const val TASK_LIST = "task_list"
+    const val ADD_TASK = "add_task"
+    const val EDIT_TASK = "edit_task/{taskId}"
+    const val CAMPUS_INFO = "campus_info"
+
+    // Helper function to create the route path for editing a specific task
+    fun editTask(taskId: Int) = "edit_task/$taskId"
 }

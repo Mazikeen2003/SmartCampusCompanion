@@ -1,8 +1,11 @@
 package com.example.smartcampuscompanion.data.entity
 
-import androidx.compose.ui.graphics.Color
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
+@Entity(tableName = "departments")
 data class Department(
+    @PrimaryKey
     val name: String,
-    val bgColor: Color
+    val bgColor: Long
 )
