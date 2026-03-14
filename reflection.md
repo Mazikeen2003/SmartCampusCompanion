@@ -1,3 +1,34 @@
+## 📊 Architecture Diagram
+
+```mermaid
+graph TD
+    subgraph Presentation_Layer [Presentation Layer - Compose + MVI]
+        UI[Jetpack Compose Screens]
+        Intent[User Intents - TaskIntent/AnnIntent]
+        VM[ViewModel - State Management]
+        State[Immutable UI State - StateFlow]
+        Effect[Side Effects - Channels/Navigation]
+    end
+
+    subgraph Domain_Data_Layer [Domain & Data Layer - Room + Repository]
+        Repo[Repositories - Task/Announcement]
+        DAO[Room DAOs]
+        DB[(Room Database)]
+        Entity[Data Entities]
+    end
+
+    UI -->|Triggers| Intent
+    Intent -->|Handled by| VM
+    VM -->|Updates| State
+    State -->|Renders| UI
+    VM -.->|Emits| Effect
+    Effect -.->|Navigate/Snackbar| UI
+    VM <-->|Requests| Repo
+    Repo <-->|Accesses| DAO
+    DAO <-->|CRUD| DB
+```
+
+
 ## 📝 Reflection Document
 
 ### 🔍 Git Challenges & Learning Curve
