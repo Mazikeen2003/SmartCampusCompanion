@@ -30,35 +30,6 @@ The **Smart Campus Companion** is a robust mobile solution designed to streamlin
 ## 🏗️ Technical Architecture
 The project strictly implements **MVVM** enhanced with the **MVI (Model-View-Intent)** pattern to ensure predictable state management and high testability.
 
-### 📊 Architecture Diagram
-```mermaid
-graph TD
-    subgraph Presentation_Layer [Presentation Layer - Compose + MVI]
-        UI[Jetpack Compose Screens]
-        Intent[User Intents - TaskIntent/AnnIntent]
-        VM[ViewModel - State Management]
-        State[Immutable UI State - StateFlow]
-        Effect[Side Effects - Channels/Navigation]
-    end
-
-    subgraph Domain_Data_Layer [Domain & Data Layer - Room + Repository]
-        Repo[Repositories - Task/Announcement]
-        DAO[Room DAOs]
-        DB[(Room Database)]
-        Entity[Data Entities]
-    end
-
-    UI -->|Triggers| Intent
-    Intent -->|Handled by| VM
-    VM -->|Updates| State
-    State -->|Renders| UI
-    VM -.->|Emits| Effect
-    Effect -.->|Navigate/Snackbar| UI
-    VM <-->|Requests| Repo
-    Repo <-->|Accesses| DAO
-    DAO <-->|CRUD| DB
-```
-
 ### 🛠️ Technical Focus
 *   **State as Source of Truth:** A single immutable `UiState` object controls every pixel on the screen.
 *   **Unidirectional Data Flow (UDF):** User actions flow up as Intents; data updates flow down as State.
@@ -66,6 +37,57 @@ graph TD
 *   **Dependency Injection:** Powered by **Hilt** for scalable and testable code.
 
 ---
+
+📋 Task Delegation
+
+📋 Task Delegation
+Prelim Tasks
+
+👤 Member 1 – Git Manager & Light Integrator
+Responsibilities: create repo & branches (main, develop), monitor commits, review/merge PRs, minimal coding (MainActivity, base structure)
+Deliverables: stable develop branch, clean Git history, repo link
+
+👤 Member 2 – UI Designer (Login & Theme)
+Responsibilities: build Login UI (Jetpack Compose), apply Material Theme, handle UI states & responsiveness
+Deliverables: Login screen, theme applied, ≥5 commits
+
+👤 Member 3 – UI & Navigation Developer
+Responsibilities: Dashboard UI, app navigation (Login → Dashboard → Campus Info), NavHost & navigation graph
+Deliverables: Dashboard UI, functional navigation, ≥5 commits
+
+👤 Member 4 – Feature & UI Developer
+Responsibilities: Campus Info module (departments + contacts), mock authentication, store login session (SharedPreferences)
+Deliverables: working login logic, populated campus info screen, ≥5 commits
+
+👤 Member 5 – UI Support & Easy Tasks
+Responsibilities: reusable UI components (buttons, cards, text styles), minor UI polish, consistency fixes
+Deliverables: shared components, UI polish, ≥5 commits
+
+Midterm Tasks – MVVM + Room Phase
+
+General Rules: ≥8 meaningful commits per member; PRs required; only Git Manager edits navigation/MainActivity; final tag: v1.0-midterm
+
+👤 Member 1 – Git Manager & Integrator (Biblanias)
+Allowed Files: navigation/NavGraph.kt, navigation/Routes.kt, MainActivity.kt
+Responsibilities: manage branches (room-core, task-manager, announcements), enforce PR workflow, merge features, ensure builds, document conflict, create release tag
+
+👤 Member 2 – Room Core & Data Architecture Owner (Bon)
+Branch: feature/room-core
+Allowed Files: AppDatabase.kt, entities (User.kt, Department.kt), TypeConverters.kt
+Responsibilities: configure Room DB, register DAOs, handle migrations, maintain clean data layer
+Midterm Deliverables: architecture diagram, reflection (Git challenges + conflict resolution)
+
+👤 Member 3 – Task Manager Feature Owner (Besa)
+Branch: feature/task-manager
+Allowed Files: Task entity, DAO, repository, ViewModel, Task screens (TaskListScreen, AddEditTaskScreen)
+Responsibilities: full CRUD, Date/Time picker, LazyColumn rendering, connect UI → VM → Repo → DAO, empty state handling, maintain MVVM separation
+
+👤 Member 4 – Announcements Feature Owner (Bermas)
+Branch: feature/announcements
+Allowed Files: Announcement entity, DAO, repository, ViewModel, Announcement screens
+Responsibilities: display announcements, store in Room, mark-as-read feature, read/unread indicators, connect UI → VM → Repo → DAO, empty state handling
+
+
 
 ## 🚀 Git Workflow & Requirements
 *   **Primary Branches:** `main` (Production), `develop` (Integration).
