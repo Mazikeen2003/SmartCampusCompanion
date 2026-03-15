@@ -48,6 +48,23 @@ Both features attempted to modify the same line in `AppDatabase` to include thei
 
 ---
 
+### Merge Conflict Encountered During Feature Integration
+
+During the integration phase, a merge conflict occurred when Bermas attempted to merge the feature/announcements branch into the develop branch. GitHub displayed a *"Resolve Conflicts"* notification, indicating that the branch could not be merged automatically.
+
+The conflict occurred because multiple branches modified shared project files at the same time. Specifically, both the feature/task-manager and feature/announcements branches introduced changes related to database configuration and navigation setup.
+
+Because these files were edited independently in different branches, Git could not determine which version should be kept during the merge.
+
+To resolve the issue:
+
+1. The Git Manager reviewed the conflicting files on GitHub.
+2. The correct changes from both branches were manually combined.
+3. The database configuration and navigation setup were updated to include both features.
+4. After confirming that no functionality was lost, the conflict was resolved and the merge was completed successfully.
+
+Although a screenshot of the GitHub conflict was not captured during the process, the conflict was documented and resolved through manual merging and verification of the application's build and functionality.
+
 # 📝 Project Reflection
 
 [⬅ Back to README](README.md)
