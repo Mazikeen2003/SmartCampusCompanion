@@ -14,6 +14,8 @@ import com.example.smartcampuscompanion.ui.screens.tasks.TaskListScreen
 import com.example.smartcampuscompanion.ui.screens.campus.CampusInfoScreen
 import com.example.smartcampuscompanion.ui.screens.announcement.AnnouncementScreen
 import com.example.smartcampuscompanion.ui.screens.announcement.AnnouncementDetailScreen
+import com.example.smartcampuscompanion.ui.screens.announcement.AddAnnouncementScreen
+import com.example.smartcampuscompanion.ui.screens.settings.SettingsScreen
 import com.example.smartcampuscompanion.ui.viewmodel.AuthViewModel
 import com.example.smartcampuscompanion.ui.viewmodel.TaskViewModel
 import com.example.smartcampuscompanion.ui.viewmodel.AnnouncementViewModel
@@ -50,9 +52,24 @@ fun NavGraph(
                 },
                 onNavigateToTasks = { navController.navigate(Routes.TASK_LIST) },
                 onNavigateToAnnouncements = { navController.navigate(Routes.ANNOUNCEMENT_LIST) },
+                onNavigateToSettings = { navController.navigate(Routes.SETTINGS) },
+                onNavigateToAddAnnouncement = { navController.navigate(Routes.ADD_ANNOUNCEMENT) },
                 viewModel = departmentViewModel,
                 isDarkMode = isDarkMode,
-                onThemeToggle = onThemeToggle
+                onThemeToggle = onThemeToggle,
+                userRole = "student" // Placeholder: replace with actual role from authViewModel
+            )
+        }
+        composable(Routes.SETTINGS) {
+            SettingsScreen(
+                isDarkMode = isDarkMode,
+                onThemeToggle = onThemeToggle,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Routes.ADD_ANNOUNCEMENT) {
+            AddAnnouncementScreen(
+                onBackClick = { navController.popBackStack() }
             )
         }
         composable(Routes.TASK_LIST) {

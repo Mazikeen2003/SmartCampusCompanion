@@ -9,6 +9,8 @@ object Routes {
     const val CAMPUS_INFO = "campus_info"
     const val ANNOUNCEMENT_LIST = "announcement_list"
     const val ANNOUNCEMENT_DETAIL = "announcement_detail/{announcementId}"
+    const val SETTINGS = "settings"
+    const val ADD_ANNOUNCEMENT = "add_announcement"
 
     // Helper function to create the route path for editing a specific task
     fun editTask(taskId: Int) = "edit_task/$taskId"
