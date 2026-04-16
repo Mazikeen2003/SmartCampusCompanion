@@ -32,9 +32,12 @@ fun DashboardScreen(
     onLogout: () -> Unit,
     onNavigateToTasks: () -> Unit = {},
     onNavigateToAnnouncements: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToAddAnnouncement: () -> Unit = {},
     viewModel: DepartmentViewModel,
     isDarkMode: Boolean,
-    onThemeToggle: () -> Unit
+    onThemeToggle: () -> Unit,
+    userRole: String = "student"
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()

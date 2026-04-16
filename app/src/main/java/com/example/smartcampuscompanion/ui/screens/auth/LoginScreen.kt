@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -15,6 +16,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.smartcampuscompanion.data.entity.User
 import com.example.smartcampuscompanion.ui.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,7 +37,17 @@ fun LoginScreen(authViewModel: AuthViewModel, onLoginSuccess: () -> Unit) {
     var password by remember { mutableStateOf(rememberedUser?.password ?: "") }
     var passwordVisible by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(rememberedUser != null) }
-    var error by remember { mutableStateOf<String?>(null) }
+
+    val isLoading by authViewModel.isLoading.collectAsState()
+    val isSuccess by authViewModel.isSuccess.collectAsState()
+    val errorMessage by authViewModel.errorMessage.collectAsState()
+
+    LaunchedEffect(isSuccess) {
+        if (isSuccess) {
+            onLoginSuccess()
+            authViewModel.resetState()
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -47,7 +59,8 @@ fun LoginScreen(authViewModel: AuthViewModel, onLoginSuccess: () -> Unit) {
             onValueChange = { email = it },
             label = { Text("Email") },
             leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email Icon") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isLoading
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
@@ -62,28 +75,42 @@ fun LoginScreen(authViewModel: AuthViewModel, onLoginSuccess: () -> Unit) {
                     Icon(image, "Toggle password visibility")
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isLoading
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(checked = rememberMe, onCheckedChange = { rememberMe = it })
+            Checkbox(
+                checked = rememberMe, 
+                onCheckedChange = { rememberMe = it },
+                enabled = !isLoading
+            )
             Text("Remember me")
         }
-        error?.let {
+        errorMessage?.let {
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = it, 
+                color = MaterialTheme.colorScheme.error, 
+                style = MaterialTheme.typography.bodySmall
+            )
         }
         Spacer(modifier = Modifier.height(32.dp))
         FilledTonalButton(
             onClick = {
-                if (authViewModel.login(User(email, password), rememberMe)) {
-                    onLoginSuccess()
-                } else {
-                    error = "Invalid email or password. Please try again."
-                }
+                authViewModel.login(email, password, rememberMe)
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isLoading && email.isNotBlank() && password.isNotBlank()
         ) {
-            Text("Login")
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text("Login")
+            }
         }
     }
 }
