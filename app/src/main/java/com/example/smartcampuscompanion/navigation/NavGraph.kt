@@ -23,13 +23,14 @@ import com.example.smartcampuscompanion.ui.viewmodel.DepartmentViewModel
 fun NavGraph(
     navController: NavHostController,
     isDarkMode: Boolean,
-    onThemeToggle: () -> Unit
+    onThemeToggle: () -> Unit,
+    startDestination: String = Routes.LOGIN_REGISTER
 ) {
     val authViewModel: AuthViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
-        startDestination = if (authViewModel.isLoggedIn()) Routes.DASHBOARD else Routes.LOGIN_REGISTER
+        startDestination = startDestination
     ) {
         composable(Routes.LOGIN_REGISTER) {
             LoginRegisterScreen(
