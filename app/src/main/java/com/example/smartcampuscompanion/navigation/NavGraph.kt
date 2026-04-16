@@ -38,7 +38,10 @@ fun NavGraph(
             LoginRegisterScreen(
                 authViewModel = authViewModel,
                 onLoginSuccess = { navController.navigate(Routes.DASHBOARD) { popUpTo(Routes.LOGIN_REGISTER) { inclusive = true } } },
-                onRegisterSuccess = { navController.navigate(Routes.DASHBOARD) { popUpTo(Routes.LOGIN_REGISTER) { inclusive = true } } }
+                onRegisterSuccess = { 
+                    // Registration success is now handled via a dialog in RegisterScreen
+                    // We don't navigate to Dashboard anymore.
+                }
             )
         }
         composable(Routes.DASHBOARD) {
