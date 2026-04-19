@@ -12,6 +12,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await // Importante ito para sa .await()
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,7 +22,7 @@ class AuthViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
     private val sharedPreferences = context.getSharedPreferences("user_session", Context.MODE_PRIVATE)
-    
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
@@ -54,74 +55,81 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
-            _isSuccess.value = false
 
-            firebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        sharedPreferences.edit {
-                            putString("user_email", email)
-                            if (rememberMe) {
-                                putString(rememberedUserKey, "$email:$password")
-                            } else {
-                                remove(rememberedUserKey)
-                            }
-                        }
-                        fetchUserRole(email)
+            try {
+                // 1. Firebase Auth Sign In
+                firebaseAuth.signInWithEmailAndPassword(email, password).await()
+
+                // 2. Pag-save sa SharedPreferences
+                sharedPreferences.edit {
+                    putString("user_email", email)
+                    if (rememberMe) {
+                        putString(rememberedUserKey, "$email:$password")
                     } else {
-                        _isLoading.value = false
-                        _errorMessage.value = task.exception?.message ?: "Login failed"
+                        remove(rememberedUserKey)
                     }
                 }
+
+                // 3. Fetch Role bago sabihing Success
+                fetchUserRole(email)
+
+            } catch (e: Exception) {
+                _isLoading.value = false
+                _errorMessage.value = e.localizedMessage ?: "Login failed"
+            }
         }
     }
 
     private fun fetchUserRole(email: String) {
-        firestore.collection("users").document(email).get()
-            .addOnSuccessListener { document ->
-                _userRole.value = document.getString("role") ?: "student"
-                _isLoading.value = false
+        viewModelScope.launch {
+            try {
+                val document = firestore.collection("users").document(email).get().await()
+                val role = document.getString("role") ?: "student"
+
+                _userRole.value = role
                 _isSuccess.value = true
-            }
-            .addOnFailureListener {
-                _isLoading.value = false
+            } catch (e: Exception) {
+                // Default to student if firestore fails but auth is successful
                 _userRole.value = "student"
                 _isSuccess.value = true
+            } finally {
+                _isLoading.value = false
             }
+        }
     }
 
     fun register(user: User) {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
-            _isRegisterSuccess.value = false
-            
-            firebaseAuth.createUserWithEmailAndPassword(user.email, user.password)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        saveUserToFirestore(user)
-                    } else {
-                        _isLoading.value = false
-                        _errorMessage.value = task.exception?.message ?: "Registration failed"
-                    }
-                }
+
+            try {
+                // 1. Create User sa Auth
+                firebaseAuth.createUserWithEmailAndPassword(user.email, user.password).await()
+
+                // 2. Save User details at Role sa Firestore
+                saveUserToFirestore(user)
+
+            } catch (e: Exception) {
+                _isLoading.value = false
+                _errorMessage.value = e.localizedMessage ?: "Registration failed"
+            }
         }
     }
 
-    private fun saveUserToFirestore(user: User) {
+    private suspend fun saveUserToFirestore(user: User) {
         val userData = hashMapOf(
             "email" to user.email,
-            "role" to user.role
+            "role" to user.role // Dito nase-save kung 'admin' o 'student'
         )
-        firestore.collection("users").document(user.email).set(userData)
-            .addOnSuccessListener {
-                _isLoading.value = false
-                _isRegisterSuccess.value = true
-            }
-            .addOnFailureListener { e ->
-                _isLoading.value = false
-                _errorMessage.value = e.message ?: "Failed to save user data"
-            }
+        try {
+            firestore.collection("users").document(user.email).set(userData).await()
+            _isRegisterSuccess.value = true
+        } catch (e: Exception) {
+            _errorMessage.value = "Auth created, but failed to save profile: ${e.message}"
+        } finally {
+            _isLoading.value = false
+        }
     }
 
     fun resetState() {
@@ -131,23 +139,22 @@ class AuthViewModel @Inject constructor(
         _isLoading.value = false
     }
 
+    // Kinonvert ko ito para mas safe ang parsing
     fun getRememberedUser(): User? {
-        val remembered = sharedPreferences.getString(rememberedUserKey, null)
-        return remembered?.let {
-            val parts = it.split(":", limit = 2)
-            if (parts.size == 2) User(parts[0], parts[1]) else null
-        }
+        val remembered = sharedPreferences.getString(rememberedUserKey, null) ?: return null
+        val parts = remembered.split(":", limit = 2)
+        return if (parts.size == 2) User(email = parts[0], password = parts[1]) else null
     }
 
-    fun isLoggedIn(): Boolean {
-        return firebaseAuth.currentUser != null
-    }
+    fun isLoggedIn(): Boolean = firebaseAuth.currentUser != null
 
     fun logout() {
         firebaseAuth.signOut()
         _userRole.value = null
+        _isSuccess.value = false
         sharedPreferences.edit {
             remove("user_email")
+            // Note: Hindi natin tinatanggal ang remembered_user para sa "Remember Me" feature
         }
     }
-}
+}   
