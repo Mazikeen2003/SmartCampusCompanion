@@ -7,7 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.smartcampuscompanion.data.entity.Announcement
 import kotlinx.coroutines.flow.Flow
-
+// Conflict strategy ensures consistent data updates
 @Dao
 interface AnnouncementDao {
 
