@@ -12,7 +12,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
+// Fetches remote data on initialization
 @HiltViewModel
 class TaskViewModel @Inject constructor(
     private val repository: TaskRepository
@@ -26,6 +26,7 @@ class TaskViewModel @Inject constructor(
 
     init {
         handleIntent(TaskIntent.LoadTasks)
+        refresh()
     }
 
     fun handleIntent(intent: TaskIntent) {
@@ -40,6 +41,12 @@ class TaskViewModel @Inject constructor(
             is TaskIntent.LoadTaskForEdit -> loadTaskForEdit(intent.taskId)
             is TaskIntent.SaveTask -> saveTask()
             is TaskIntent.ClearForm -> clearForm()
+        }
+    }
+
+    private fun refresh() {
+        viewModelScope.launch {
+            repository.refreshTasks()
         }
     }
 
