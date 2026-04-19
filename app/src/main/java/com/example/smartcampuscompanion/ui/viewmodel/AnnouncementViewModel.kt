@@ -14,7 +14,7 @@ import javax.inject.Inject
 class AnnouncementViewModel @Inject constructor(
     private val repository: AnnouncementRepository
 ) : ViewModel() {
-
+    // Enables background data fetching
     private val _uiState = MutableStateFlow(AnnouncementState())
     val uiState: StateFlow<AnnouncementState> = _uiState.asStateFlow()
 
