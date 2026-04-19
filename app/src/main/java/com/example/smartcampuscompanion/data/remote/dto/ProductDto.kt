@@ -4,3 +4,4 @@ data class ProductDto(
     val id: Int,
     val name: String
 )
+// DTO for API response
