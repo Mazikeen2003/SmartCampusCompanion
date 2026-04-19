@@ -30,3 +30,4 @@ class DepartmentRepository @Inject constructor(
         }
     }
 }
+// Handles remote-to-local synchronization for departments
