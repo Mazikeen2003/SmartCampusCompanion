@@ -12,7 +12,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
+// Fetches remote data on initialization
 @HiltViewModel
 class TaskViewModel @Inject constructor(
     private val repository: TaskRepository
