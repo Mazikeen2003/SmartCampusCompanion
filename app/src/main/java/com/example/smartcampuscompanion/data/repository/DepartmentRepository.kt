@@ -2,32 +2,26 @@ package com.example.smartcampuscompanion.data.repository
 
 import com.example.smartcampuscompanion.data.dao.DepartmentDao
 import com.example.smartcampuscompanion.data.entity.Department
-import com.example.smartcampuscompanion.data.remote.ApiService
-import com.example.smartcampuscompanion.data.remote.dto.DepartmentDto
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class DepartmentRepository @Inject constructor(
     private val departmentDao: DepartmentDao,
-    private val apiService: ApiService
+    private val firestore: FirebaseFirestore
 ) {
     val allDepartments: Flow<List<Department>> = departmentDao.getAll()
 
     suspend fun refreshDepartments() {
         try {
-            val remoteDepartments = apiService.getDepartments()
-            val entities = remoteDepartments.map { dto ->
-                Department(
-                    name = dto.name,
-                    bgColor = dto.bgColor,
-                    description = dto.description
-                )
+            val snapshot = firestore.collection("departments").get().await()
+            val entities = snapshot.documents.mapNotNull { doc ->
+                doc.toObject(Department::class.java)
             }
             departmentDao.insertAll(entities)
         } catch (e: Exception) {
-            // Handle error (e.g., log it or use fallback)
             e.printStackTrace()
         }
     }
 }
-// Handles remote-to-local synchronization for departments

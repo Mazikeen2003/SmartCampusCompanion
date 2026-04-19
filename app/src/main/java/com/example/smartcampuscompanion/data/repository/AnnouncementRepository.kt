@@ -2,13 +2,14 @@ package com.example.smartcampuscompanion.data.repository
 
 import com.example.smartcampuscompanion.data.dao.AnnouncementDao
 import com.example.smartcampuscompanion.data.entity.Announcement
-import com.example.smartcampuscompanion.data.remote.ApiService
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-// Synchronizes API data with Room database
+
 class AnnouncementRepository @Inject constructor(
     private val announcementDao: AnnouncementDao,
-    private val apiService: ApiService
+    private val firestore: FirebaseFirestore
 ) {
 
     val allAnnouncements: Flow<List<Announcement>> =
@@ -16,15 +17,9 @@ class AnnouncementRepository @Inject constructor(
 
     suspend fun refreshAnnouncements() {
         try {
-            val remoteAnnouncements = apiService.getAnnouncements()
-            val entities = remoteAnnouncements.map { dto ->
-                Announcement(
-                    id = dto.id,
-                    title = dto.title,
-                    content = dto.content,
-                    date = dto.date,
-                    isRead = false // Default for new items
-                )
+            val snapshot = firestore.collection("announcements").get().await()
+            val entities = snapshot.documents.mapNotNull { doc ->
+                doc.toObject(Announcement::class.java)
             }
             announcementDao.insertAnnouncements(entities)
         } catch (e: Exception) {
@@ -34,6 +29,11 @@ class AnnouncementRepository @Inject constructor(
 
     suspend fun insert(announcement: Announcement) {
         announcementDao.insertAnnouncement(announcement)
+        try {
+            firestore.collection("announcements").document(announcement.id.toString()).set(announcement).await()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     suspend fun insertAll(announcements: List<Announcement>) {
@@ -42,6 +42,11 @@ class AnnouncementRepository @Inject constructor(
 
     suspend fun update(announcement: Announcement) {
         announcementDao.updateAnnouncement(announcement)
+        try {
+            firestore.collection("announcements").document(announcement.id.toString()).set(announcement).await()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     suspend fun getAnnouncementById(id: Int): Announcement? {
