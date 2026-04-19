@@ -5,7 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.Column
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.smartcampuscompanion.ui.ProductViewModel
-
+// Updates UI to reactively display API data
 @Composable
 fun DashboardScreen() {
 
