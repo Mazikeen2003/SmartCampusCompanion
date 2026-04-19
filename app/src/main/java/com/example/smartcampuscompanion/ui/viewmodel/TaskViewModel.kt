@@ -46,9 +46,9 @@ class TaskViewModel @Inject constructor(
     private fun loadTasks() {
         viewModelScope.launch {
             repository.allTasks
-                .onStart { _uiState.update { it.copy(isLoading = true) } }
-                .catch { e -> 
-                    _uiState.update { it.copy(isLoading = false, error = e.message) }
+                .onStart { _uiState.update { it.copy(isLoading = true, error = null) } }
+                .catch { e ->
+                    _uiState.update { it.copy(isLoading = false, error = e.localizedMessage) }
                 }
                 .collect { tasks ->
                     _uiState.update { it.copy(tasks = tasks, isLoading = false) }
@@ -58,23 +58,36 @@ class TaskViewModel @Inject constructor(
 
     private fun deleteTask(task: Task) {
         viewModelScope.launch {
-            repository.delete(task)
-            _effect.send(TaskEffect.ShowSnackbar("Task deleted"))
+            try {
+                repository.delete(task)
+                _effect.send(TaskEffect.ShowSnackbar("Task deleted successfully"))
+            } catch (e: Exception) {
+                _effect.send(TaskEffect.ShowSnackbar("Failed to delete task"))
+            }
         }
     }
 
     private fun toggleTaskCompletion(task: Task) {
         viewModelScope.launch {
-            repository.update(task.copy(isCompleted = !task.isCompleted))
+            try {
+                repository.update(task.copy(isCompleted = !task.isCompleted))
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = "Could not update task status") }
+            }
         }
     }
 
+    // Helper function para sa validation para "Clean" tignan
+    private fun validateForm(title: String, date: String, time: String): Boolean {
+        return title.isNotBlank() && date.isNotBlank() && time.isNotBlank()
+    }
+
     private fun updateTitle(title: String) {
-        _uiState.update { 
+        _uiState.update {
             it.copy(
                 title = title,
-                isFormValid = title.isNotBlank() && it.dueDate.isNotBlank() && it.dueTime.isNotBlank()
-            ) 
+                isFormValid = validateForm(title, it.dueDate, it.dueTime)
+            )
         }
     }
 
@@ -83,65 +96,77 @@ class TaskViewModel @Inject constructor(
     }
 
     private fun updateDate(date: String) {
-        _uiState.update { 
+        _uiState.update {
             it.copy(
                 dueDate = date,
-                isFormValid = it.title.isNotBlank() && date.isNotBlank() && it.dueTime.isNotBlank()
-            ) 
+                isFormValid = validateForm(it.title, date, it.dueTime)
+            )
         }
     }
 
     private fun updateTime(time: String) {
-        _uiState.update { 
+        _uiState.update {
             it.copy(
                 dueTime = time,
-                isFormValid = it.title.isNotBlank() && it.dueDate.isNotBlank() && time.isNotBlank()
-            ) 
+                isFormValid = validateForm(it.title, it.dueDate, time)
+            )
         }
     }
 
     private fun loadTaskForEdit(taskId: Int) {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
             val task = repository.getTaskById(taskId)
-            task?.let { t ->
-                _uiState.update {
-                    it.copy(
-                        editingTaskId = t.id,
-                        title = t.title,
-                        description = t.description,
-                        dueDate = t.dueDate,
-                        dueTime = t.dueTime,
-                        isFormValid = true
+            _uiState.update { state ->
+                if (task != null) {
+                    state.copy(
+                        editingTaskId = task.id,
+                        title = task.title,
+                        description = task.description,
+                        dueDate = task.dueDate,
+                        dueTime = task.dueTime,
+                        isFormValid = true,
+                        isLoading = false
                     )
+                } else {
+                    state.copy(isLoading = false, error = "Task not found")
                 }
             }
         }
     }
 
     private fun saveTask() {
-        viewModelScope.launch {
-            val currentState = _uiState.value
-            val task = Task(
-                id = currentState.editingTaskId ?: 0,
-                title = currentState.title,
-                description = currentState.description,
-                dueDate = currentState.dueDate,
-                dueTime = currentState.dueTime
-            )
+        if (!_uiState.value.isFormValid) return
 
-            if (currentState.editingTaskId == null) {
-                repository.insert(task)
-            } else {
-                repository.update(task)
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true) }
+                val currentState = _uiState.value
+                val task = Task(
+                    id = currentState.editingTaskId ?: 0,
+                    title = currentState.title,
+                    description = currentState.description,
+                    dueDate = currentState.dueDate,
+                    dueTime = currentState.dueTime,
+                    isCompleted = false // Default or retain existing state if editing
+                )
+
+                if (currentState.editingTaskId == null) {
+                    repository.insert(task)
+                } else {
+                    repository.update(task)
+                }
+
+                _uiState.update { it.copy(isSaved = true, isLoading = false) }
+                _effect.send(TaskEffect.NavigateBack)
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false, error = "Failed to save task") }
             }
-            
-            _uiState.update { it.copy(isSaved = true) }
-            _effect.send(TaskEffect.NavigateBack)
         }
     }
 
     private fun clearForm() {
-        _uiState.update { 
+        _uiState.update {
             it.copy(
                 editingTaskId = null,
                 title = "",
@@ -149,7 +174,8 @@ class TaskViewModel @Inject constructor(
                 dueDate = "",
                 dueTime = "",
                 isFormValid = false,
-                isSaved = false
+                isSaved = false,
+                error = null
             )
         }
     }
