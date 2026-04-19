@@ -1,5 +1,9 @@
 package com.example.smartcampuscompanion.ui.screens.dashboard
 
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.*
+import com.example.smartcampuscompanion.ui.ProductViewModel
+import com.example.smartcampuscompanion.data.remote.dto.ProductDto
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -39,6 +43,15 @@ fun DashboardScreen(
     onThemeToggle: () -> Unit,
     userRole: String = "student"
 ) {
+    val productViewModel: ProductViewModel = viewModel()
+
+    val products = productViewModel.products.collectAsState().value
+    val loading = productViewModel.loading.collectAsState().value
+    val error = productViewModel.error.collectAsState().value
+
+    LaunchedEffect(Unit) {
+        productViewModel.fetchProducts()
+    }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -127,10 +140,13 @@ fun DashboardScreen(
             Box(modifier = Modifier.fillMaxSize().padding(padding)) {
                 when (currentScreen) {
                     "main" -> MainDashboardContent(
-                        departments, 
-                        onNavigateToTasks, 
-                        onNavigateToAnnouncements,
-                        onDepartmentClick = { selectedDepartment = it }
+                        departments = departments, 
+                        onNavigateToTasks = onNavigateToTasks, 
+                        onNavigateToAnnouncements = onNavigateToAnnouncements,
+                        onDepartmentClick = { selectedDepartment = it },
+                        products = products,
+                        loading = loading,
+                        error = error
                     )
                     "campus_info" -> CampusInfoScreen(onBackClick = { currentScreen = "main" })
                 }
@@ -172,7 +188,10 @@ fun MainDashboardContent(
     departments: List<Department>,
     onNavigateToTasks: () -> Unit,
     onNavigateToAnnouncements: () -> Unit,
-    onDepartmentClick: (Department) -> Unit
+    onDepartmentClick: (Department) -> Unit,
+    products: List<ProductDto>,
+    loading: Boolean,
+    error: String
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -284,6 +303,30 @@ fun MainDashboardContent(
                     backgroundColor = Color(dept.bgColor)
                 ) { 
                     onDepartmentClick(dept)
+                }
+            }
+        }
+        
+        item {
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "API Data",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                when {
+                    loading -> Text("Loading API data...")
+                    error.isNotEmpty() -> Text(error)
+                    else -> {
+                        products.take(3).forEach {
+                            Text(text = it.name)
+                        }
+                    }
                 }
             }
         }

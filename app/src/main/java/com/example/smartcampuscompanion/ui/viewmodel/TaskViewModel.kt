@@ -26,6 +26,7 @@ class TaskViewModel @Inject constructor(
 
     init {
         handleIntent(TaskIntent.LoadTasks)
+        refresh()
     }
 
     fun handleIntent(intent: TaskIntent) {
@@ -40,6 +41,12 @@ class TaskViewModel @Inject constructor(
             is TaskIntent.LoadTaskForEdit -> loadTaskForEdit(intent.taskId)
             is TaskIntent.SaveTask -> saveTask()
             is TaskIntent.ClearForm -> clearForm()
+        }
+    }
+
+    private fun refresh() {
+        viewModelScope.launch {
+            repository.refreshTasks()
         }
     }
 

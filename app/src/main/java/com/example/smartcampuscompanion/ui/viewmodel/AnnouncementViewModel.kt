@@ -20,6 +20,7 @@ class AnnouncementViewModel @Inject constructor(
 
     init {
         handleIntent(AnnouncementIntent.LoadAnnouncements)
+        refresh()
     }
 
     fun handleIntent(intent: AnnouncementIntent) {
@@ -28,6 +29,12 @@ class AnnouncementViewModel @Inject constructor(
             is AnnouncementIntent.MarkAsRead -> markAsRead(intent.announcementId)
             is AnnouncementIntent.MarkAllAsRead -> markAllAsRead()
             is AnnouncementIntent.LoadAnnouncementDetail -> loadAnnouncementDetail(intent.announcementId)
+        }
+    }
+
+    private fun refresh() {
+        viewModelScope.launch {
+            repository.refreshAnnouncements()
         }
     }
 
