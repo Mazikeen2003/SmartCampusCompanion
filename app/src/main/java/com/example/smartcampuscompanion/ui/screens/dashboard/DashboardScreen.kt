@@ -141,7 +141,8 @@ fun DashboardScreen(
                         departments = departments, 
                         onNavigateToTasks = onNavigateToTasks, 
                         onNavigateToAnnouncements = onNavigateToAnnouncements,
-                        onDepartmentClick = { selectedDepartment = it }
+                        onDepartmentClick = { selectedDepartment = it },
+                        userRole = userRole
                     )
                     "campus_info" -> CampusInfoScreen(onBackClick = { currentScreen = "main" })
                 }
@@ -183,7 +184,8 @@ fun MainDashboardContent(
     departments: List<Department>,
     onNavigateToTasks: () -> Unit,
     onNavigateToAnnouncements: () -> Unit,
-    onDepartmentClick: (Department) -> Unit
+    onDepartmentClick: (Department) -> Unit,
+    userRole: String
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -207,12 +209,12 @@ fun MainDashboardContent(
             ) {
                 Column {
                     Surface(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = if (userRole == "admin") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier.padding(bottom = 8.dp)
                     ) {
                         Text(
-                            "STUDENT PORTAL",
+                            if (userRole == "admin") "ADMIN PANEL" else "STUDENT PORTAL",
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onPrimary,

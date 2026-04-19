@@ -1,6 +1,8 @@
 package com.example.smartcampuscompanion.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -46,6 +48,7 @@ fun NavGraph(
         }
         composable(Routes.DASHBOARD) {
             val departmentViewModel: DepartmentViewModel = hiltViewModel()
+            val userRole by authViewModel.userRole.collectAsState()
 
             DashboardScreen(
                 onLogout = {
@@ -61,7 +64,7 @@ fun NavGraph(
                 viewModel = departmentViewModel,
                 isDarkMode = isDarkMode,
                 onThemeToggle = onThemeToggle,
-                userRole = "student"
+                userRole = userRole ?: "student"
             )
         }
         composable(Routes.SETTINGS) {

@@ -1,30 +1,56 @@
 package com.example.smartcampuscompanion.ui.screens.announcement
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Campaign
+import androidx.compose.material.icons.filled.ContentPaste
+import androidx.compose.material.icons.filled.Title
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.smartcampuscompanion.ui.viewmodel.AnnouncementViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddAnnouncementScreen(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: AnnouncementViewModel = hiltViewModel()
 ) {
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(
-                title = { Text("Add Announcement") },
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        "CREATE ANNOUNCEMENT",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 1.sp
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.primary
+                )
             )
         }
     ) { padding ->
@@ -32,28 +58,116 @@ fun AddAnnouncementScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            OutlinedTextField(
+            // Header Icon and Text
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Campaign,
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    "Broadcast to Campus",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    "Fill in the details below to notify all students.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // Input Fields
+            AnnouncementInputField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("Title") },
-                modifier = Modifier.fillMaxWidth()
+                label = "Announcement Title",
+                placeholder = "e.g., Midterm Schedule Update",
+                icon = Icons.Default.Title
             )
-            OutlinedTextField(
+
+            AnnouncementInputField(
                 value = content,
                 onValueChange = { content = it },
-                label = { Text("Content") },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 5
+                label = "Detailed Content",
+                placeholder = "Write the full announcement details here...",
+                icon = Icons.Default.ContentPaste,
+                isSingleLine = false,
+                minLines = 6
             )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Action Button
             Button(
-                onClick = { /* Handle save */ },
-                modifier = Modifier.fillMaxWidth()
+                onClick = {
+                    if (title.isBlank() || content.isBlank()) {
+                        // Basic validation
+                        return@Button
+                    }
+                    viewModel.handleIntent(AnnouncementIntent.PostAnnouncement(title, content))
+                    onBackClick()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = MaterialTheme.shapes.large,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                ),
+                enabled = title.isNotBlank() && content.isNotBlank()
             ) {
-                Text("Post Announcement")
+                Text(
+                    "POST ANNOUNCEMENT",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
+    }
+}
+
+@Composable
+fun AnnouncementInputField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    placeholder: String,
+    icon: ImageVector,
+    isSingleLine: Boolean = true,
+    minLines: Int = 1
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text(placeholder, style = MaterialTheme.typography.bodyMedium) },
+            leadingIcon = { Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp)) },
+            shape = MaterialTheme.shapes.large,
+            singleLine = isSingleLine,
+            minLines = minLines,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            )
+        )
     }
 }

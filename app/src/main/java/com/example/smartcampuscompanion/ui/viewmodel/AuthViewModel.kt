@@ -47,7 +47,21 @@ class AuthViewModel @Inject constructor(
     private fun checkUserSession() {
         val currentUser = firebaseAuth.currentUser
         if (currentUser != null) {
-            fetchUserRole(currentUser.email ?: "")
+            refreshUserRole()
+        }
+    }
+
+    fun refreshUserRole() {
+        val currentUser = firebaseAuth.currentUser ?: return
+        viewModelScope.launch {
+            try {
+                val email = currentUser.email ?: return@launch
+                val document = firestore.collection("users").document(email).get().await()
+                val role = document.getString("role") ?: "student"
+                _userRole.value = role
+            } catch (e: Exception) {
+                _userRole.value = "student"
+            }
         }
     }
 
@@ -71,7 +85,9 @@ class AuthViewModel @Inject constructor(
                 }
 
                 // 3. Fetch Role bago sabihing Success
-                fetchUserRole(email)
+                val document = firestore.collection("users").document(email).get().await()
+                _userRole.value = document.getString("role") ?: "student"
+                _isSuccess.value = true
 
             } catch (e: Exception) {
                 _isLoading.value = false

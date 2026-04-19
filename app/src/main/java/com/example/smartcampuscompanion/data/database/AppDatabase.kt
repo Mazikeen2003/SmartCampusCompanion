@@ -19,7 +19,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(entities = [User::class, Department::class, Task::class, Announcement::class], version = 13, exportSchema = false)
-@TypeConverters(com.example.smartcampuscompanion.data.database.TypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao

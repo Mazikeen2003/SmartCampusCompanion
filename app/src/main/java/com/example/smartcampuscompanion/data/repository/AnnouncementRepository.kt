@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,13 +18,11 @@ class AnnouncementRepository @Inject constructor(
     private val firestore: FirebaseFirestore
 ) {
 
-    // Sinisiguro na ang pag-fetch ng listahan ay nasa background thread
     val allAnnouncements: Flow<List<Announcement>> =
         announcementDao.getAllAnnouncements()
             .flowOn(Dispatchers.IO)
             .conflate()
 
-    suspend fun insert(announcement: Announcement) = withContext(Dispatchers.IO) {
     suspend fun refreshAnnouncements() {
         try {
             val snapshot = firestore.collection("announcements").get().await()
@@ -38,7 +35,7 @@ class AnnouncementRepository @Inject constructor(
         }
     }
 
-    suspend fun insert(announcement: Announcement) {
+    suspend fun insert(announcement: Announcement) = withContext(Dispatchers.IO) {
         announcementDao.insertAnnouncement(announcement)
         try {
             firestore.collection("announcements").document(announcement.id.toString()).set(announcement).await()
@@ -72,11 +69,16 @@ class AnnouncementRepository @Inject constructor(
         announcementDao.markAllAsRead()
     }
 
-    // Idinagdag ito para sa Admin functionality na nasa ViewModel mo
+
     suspend fun deleteById(id: Int) = withContext(Dispatchers.IO) {
         val announcement = announcementDao.getAnnouncementById(id)
         announcement?.let {
             announcementDao.deleteAnnouncement(it)
+            try {
+                firestore.collection("announcements").document(it.id.toString()).delete().await()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 }
