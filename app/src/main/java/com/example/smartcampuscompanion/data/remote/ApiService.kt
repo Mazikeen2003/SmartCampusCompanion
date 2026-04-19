@@ -19,3 +19,4 @@ interface ApiService {
     @GET("announcements")
     suspend fun getAnnouncements(): List<AnnouncementDto>
 }
+// Defines Retrofit API endpoints for campus modules
