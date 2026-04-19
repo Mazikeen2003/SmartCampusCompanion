@@ -122,14 +122,25 @@ fun DashboardScreen(
                         titleContentColor = MaterialTheme.colorScheme.primary
                     )
                 )
+            },
+            floatingActionButton = {
+                if (userRole == "admin") {
+                    FloatingActionButton(
+                        onClick = onNavigateToAddAnnouncement,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Add Announcement")
+                    }
+                }
             }
         ) { padding ->
             Box(modifier = Modifier.fillMaxSize().padding(padding)) {
                 when (currentScreen) {
                     "main" -> MainDashboardContent(
-                        departments, 
-                        onNavigateToTasks, 
-                        onNavigateToAnnouncements,
+                        departments = departments, 
+                        onNavigateToTasks = onNavigateToTasks, 
+                        onNavigateToAnnouncements = onNavigateToAnnouncements,
                         onDepartmentClick = { selectedDepartment = it }
                     )
                     "campus_info" -> CampusInfoScreen(onBackClick = { currentScreen = "main" })

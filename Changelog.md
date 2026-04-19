@@ -15,3 +15,5 @@
 
 ### Fixed
 - Resolved Gradle sync issues regarding Hilt and Firebase version compatibility.
+
+Added: Full Firebase Firestore integration for Tasks and Announcements.

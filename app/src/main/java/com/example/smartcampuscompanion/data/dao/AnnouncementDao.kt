@@ -3,7 +3,7 @@ package com.example.smartcampuscompanion.data.dao
 import androidx.room.*
 import com.example.smartcampuscompanion.data.entity.Announcement
 import kotlinx.coroutines.flow.Flow
-
+// Conflict strategy ensures consistent data updates
 @Dao
 interface AnnouncementDao {
 

@@ -15,12 +15,13 @@ import javax.inject.Inject
 class AnnouncementViewModel @Inject constructor(
     private val repository: AnnouncementRepository
 ) : ViewModel() {
-
+    // Enables background data fetching
     private val _uiState = MutableStateFlow(AnnouncementState())
     val uiState: StateFlow<AnnouncementState> = _uiState.asStateFlow()
 
     init {
         handleIntent(AnnouncementIntent.LoadAnnouncements)
+        refresh()
     }
 
     fun handleIntent(intent: AnnouncementIntent) {
@@ -33,6 +34,12 @@ class AnnouncementViewModel @Inject constructor(
             // Dito ang diskarte: Ang UI na ang magsasabi kung Admin siya o hindi
             is AnnouncementIntent.PostAnnouncement -> postAnnouncement(intent.title, intent.content)
             is AnnouncementIntent.DeleteAnnouncement -> deleteAnnouncement(intent.announcementId)
+        }
+    }
+
+    private fun refresh() {
+        viewModelScope.launch {
+            repository.refreshAnnouncements()
         }
     }
 

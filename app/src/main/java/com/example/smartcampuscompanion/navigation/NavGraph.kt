@@ -46,6 +46,7 @@ fun NavGraph(
         }
         composable(Routes.DASHBOARD) {
             val departmentViewModel: DepartmentViewModel = hiltViewModel()
+
             DashboardScreen(
                 onLogout = {
                     authViewModel.logout()
@@ -60,7 +61,7 @@ fun NavGraph(
                 viewModel = departmentViewModel,
                 isDarkMode = isDarkMode,
                 onThemeToggle = onThemeToggle,
-                userRole = "student" // Placeholder: replace with actual role from authViewModel
+                userRole = "student"
             )
         }
         composable(Routes.SETTINGS) {
