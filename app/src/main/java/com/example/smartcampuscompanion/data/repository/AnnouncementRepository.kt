@@ -5,7 +5,7 @@ import com.example.smartcampuscompanion.data.entity.Announcement
 import com.example.smartcampuscompanion.data.remote.ApiService
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
-
+// Synchronizes API data with Room database
 class AnnouncementRepository @Inject constructor(
     private val announcementDao: AnnouncementDao,
     private val apiService: ApiService
