@@ -9,12 +9,13 @@ plugins {
 
 android {
     namespace = "com.example.smartcampuscompanion"
-    compileSdk = 36
+    // Compile at Target SDK: Mas stable ang 34/35 sa ngayon kaysa 36 (na preview/experimental pa).
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.smartcampuscompanion"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -32,12 +33,13 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        // Upgrade to Java 17: Requirement ito para sa bagong version ng Hilt at Compose.
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -60,9 +62,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
 
-    // Material icons
-    implementation("androidx.compose.material:material-icons-core:1.6.7")
-    implementation("androidx.compose.material:material-icons-extended:1.6.7")
+    // Material icons - Mas maganda kung gagamit ka ng BOM versions dito
+    implementation(libs.androidx.compose.material.icons.extended)
 
     // Room
     implementation(libs.androidx.room.runtime)
@@ -80,7 +81,9 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.messaging)
 
-    // Testing
+    // Play Services Coroutines (IMPORTANTE: Para gumana ang .await() sa AuthViewModel mo)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

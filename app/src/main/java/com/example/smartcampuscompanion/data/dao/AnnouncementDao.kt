@@ -1,10 +1,6 @@
 package com.example.smartcampuscompanion.data.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.example.smartcampuscompanion.data.entity.Announcement
 import kotlinx.coroutines.flow.Flow
 // Conflict strategy ensures consistent data updates
@@ -26,9 +22,16 @@ interface AnnouncementDao {
     @Update
     suspend fun updateAnnouncement(announcement: Announcement)
 
+    @Delete
+    suspend fun deleteAnnouncement(announcement: Announcement)
+
     @Query("UPDATE announcements SET isRead = 1 WHERE id = :announcementId")
     suspend fun markAsRead(announcementId: Int)
 
     @Query("UPDATE announcements SET isRead = 1")
     suspend fun markAllAsRead()
+
+    // Extra: Delete by ID directly (Optional pero mas malinis)
+    @Query("DELETE FROM announcements WHERE id = :announcementId")
+    suspend fun deleteAnnouncementById(announcementId: Int)
 }
