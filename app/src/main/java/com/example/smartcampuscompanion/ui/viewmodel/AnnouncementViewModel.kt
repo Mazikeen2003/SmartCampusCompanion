@@ -15,6 +15,9 @@ import javax.inject.Inject
 class AnnouncementViewModel @Inject constructor(
     private val repository: AnnouncementRepository
 ) : ViewModel() {
+    // Expose repository for the Notification Observer
+    val repositoryForNotification = repository
+
     // Enables background data fetching
     private val _uiState = MutableStateFlow(AnnouncementState())
     val uiState: StateFlow<AnnouncementState> = _uiState.asStateFlow()
@@ -58,17 +61,21 @@ class AnnouncementViewModel @Inject constructor(
 
     private fun postAnnouncement(title: String, content: String) {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
             try {
+                // Member 3: Generate a high-precision ID for notification filtering
+                val timestamp = System.currentTimeMillis()
                 val newAnnouncement = Announcement(
+                    id = (timestamp % Int.MAX_VALUE).toInt(),
                     title = title,
                     content = content,
-                    // FIX: Tanggalin ang .toString() dito para maging 'Long'
-                    date = System.currentTimeMillis(),
+                    date = timestamp,
                     isRead = true
                 )
                 repository.insert(newAnnouncement)
+                _uiState.update { it.copy(isLoading = false) }
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message) }
+                _uiState.update { it.copy(isLoading = false, error = e.localizedMessage ?: "Failed to post") }
             }
         }
     }

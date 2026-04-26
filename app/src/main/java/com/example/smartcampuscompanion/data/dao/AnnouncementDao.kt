@@ -14,7 +14,7 @@ interface AnnouncementDao {
     suspend fun getAnnouncementById(announcementId: Int): Announcement?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAnnouncement(announcement: Announcement)
+    suspend fun insertAnnouncement(announcement: Announcement): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAnnouncements(announcements: List<Announcement>)
