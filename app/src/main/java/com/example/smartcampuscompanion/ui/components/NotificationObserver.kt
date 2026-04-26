@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationCompat
 import com.example.smartcampuscompanion.MainActivity
@@ -18,21 +19,26 @@ fun NotificationObserver(
     userRole: String
 ) {
     val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences("app_settings", Context.MODE_PRIVATE) }
 
     LaunchedEffect(Unit) {
         // Drop the initial list to only notify about NEW additions while the app is alive
         repository.allAnnouncements.drop(1).collect { list ->
             val latest = list.firstOrNull()
             
-            // Only notify students, and only if it was posted very recently (last 30 seconds)
-            if (userRole == "student" && latest != null && (System.currentTimeMillis() - latest.date) < 30000) {
-                showLocalNotification(context, latest.title, latest.content)
+            // Check preferences
+            val enabled = prefs.getBoolean("notifications_enabled", true)
+            val silent = prefs.getBoolean("notifications_silent", false)
+            
+            // Only notify students, if enabled, and only if it was posted very recently (last 30 seconds)
+            if (userRole == "student" && enabled && latest != null && (System.currentTimeMillis() - latest.date) < 30000) {
+                showLocalNotification(context, latest.title, latest.content, silent)
             }
         }
     }
 }
 
-private fun showLocalNotification(context: Context, title: String, message: String) {
+private fun showLocalNotification(context: Context, title: String, message: String, isSilent: Boolean) {
     val intent = Intent(context, MainActivity::class.java).apply {
         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
     }
@@ -47,9 +53,13 @@ private fun showLocalNotification(context: Context, title: String, message: Stri
         .setContentTitle(title)
         .setContentText(message)
         .setAutoCancel(true)
-        .setPriority(NotificationCompat.PRIORITY_HIGH)
-        .setDefaults(NotificationCompat.DEFAULT_ALL) // This triggers the ring/vibrate
+        .setPriority(if (isSilent) NotificationCompat.PRIORITY_LOW else NotificationCompat.PRIORITY_HIGH)
+        .setSilent(isSilent)
         .setContentIntent(pendingIntent)
+
+    if (!isSilent) {
+        notificationBuilder.setDefaults(NotificationCompat.DEFAULT_ALL)
+    }
 
     val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     notificationManager.notify(System.currentTimeMillis().toInt(), notificationBuilder.build())
