@@ -65,14 +65,20 @@ fun DashboardScreen(
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 24.dp))
 
-                    DrawerItem("Announcements", Icons.Default.Announcement) {
+                    DrawerItem(
+                        if (userRole == "admin") "Broadcasts" else "Announcements", 
+                        Icons.Default.Announcement
+                    ) {
                         scope.launch {
                             drawerState.close()
                             onNavigateToAnnouncements()
                         }
                     }
 
-                    DrawerItem("Tasks", Icons.Default.Task) {
+                    DrawerItem(
+                        if (userRole == "admin") "Task Audit" else "Tasks", 
+                        Icons.Default.Task
+                    ) {
                         scope.launch {
                             drawerState.close()
                             onNavigateToTasks()
@@ -187,6 +193,8 @@ fun MainDashboardContent(
     onDepartmentClick: (Department) -> Unit,
     userRole: String
 ) {
+    val isAdmin = userRole == "admin"
+    
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 24.dp)
@@ -195,13 +203,20 @@ fun MainDashboardContent(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(220.dp)
+                    .height(if (isAdmin) 260.dp else 220.dp)
                     .background(
                         brush = Brush.verticalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primaryContainer,
-                                MaterialTheme.colorScheme.surface
-                            )
+                            colors = if (isAdmin) {
+                                listOf(
+                                    MaterialTheme.colorScheme.errorContainer,
+                                    MaterialTheme.colorScheme.surface
+                                )
+                            } else {
+                                listOf(
+                                    MaterialTheme.colorScheme.primaryContainer,
+                                    MaterialTheme.colorScheme.surface
+                                )
+                            }
                         )
                     )
                     .padding(24.dp),
@@ -209,51 +224,81 @@ fun MainDashboardContent(
             ) {
                 Column {
                     Surface(
-                        color = if (userRole == "admin") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                        color = if (isAdmin) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier.padding(bottom = 8.dp)
                     ) {
-                        Text(
-                            if (userRole == "admin") "ADMIN PANEL" else "STUDENT PORTAL",
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (isAdmin) Icons.Default.AdminPanelSettings else Icons.Default.School,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Text(
+                                if (isAdmin) "ADMINSTRATOR CONSOLE" else "STUDENT PORTAL",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                     Text(
-                        text = "Welcome,",
+                        text = if (isAdmin) "System Manager," else "Welcome,",
                         style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                        color = (if (isAdmin) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary).copy(alpha = 0.8f)
                     )
                     Text(
-                        text = "Campus Companion",
+                        text = if (isAdmin) "Campus Control" else "Campus Companion",
                         style = MaterialTheme.typography.displaySmall,
                         fontWeight = FontWeight.Black,
                         color = MaterialTheme.colorScheme.onSurface
                     )
+                    
+                    if (isAdmin) {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            "You have full access to broadcast announcements and manage campus data.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 
             Spacer(Modifier.height(16.dp))
+
+            // Admin specific Quick Actions Row
+            if (isAdmin) {
+                Text(
+                    text = "Management Actions",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+                )
+            }
 
             Row(
                 modifier = Modifier.padding(horizontal = 24.dp).fillMaxWidth(), 
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 DashboardCard(
-                    title = "Announcements",
-                    subtitle = "Latest News",
-                    icon = Icons.Default.Campaign,
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    title = if (isAdmin) "Broadcasts" else "Announcements",
+                    subtitle = if (isAdmin) "Manage Updates" else "Latest News",
+                    icon = if (isAdmin) Icons.Default.Campaign else Icons.Default.Campaign,
+                    containerColor = if (isAdmin) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f) else MaterialTheme.colorScheme.secondaryContainer,
                     onClick = onNavigateToAnnouncements,
                     modifier = Modifier.weight(1f)
                 )
                 DashboardCard(
-                    title = "Tasks",
-                    subtitle = "Be Productive",
-                    icon = Icons.AutoMirrored.Filled.PlaylistAddCheck,
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    title = if (isAdmin) "Task Audit" else "Tasks",
+                    subtitle = if (isAdmin) "Review System" else "Be Productive",
+                    icon = if (isAdmin) Icons.Default.SettingsSuggest else Icons.AutoMirrored.Filled.PlaylistAddCheck,
+                    containerColor = if (isAdmin) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.tertiaryContainer,
                     onClick = onNavigateToTasks,
                     modifier = Modifier.weight(1f)
                 )
@@ -267,14 +312,14 @@ fun MainDashboardContent(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Colleges & Departments",
+                    text = if (isAdmin) "Campus Infrastructure" else "Colleges & Departments",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = "See All",
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = if (isAdmin) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -284,9 +329,18 @@ fun MainDashboardContent(
              item {
                  Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
                      Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                         CircularProgressIndicator()
-                         Spacer(Modifier.height(8.dp))
-                         Text("Loading Departments...", style = MaterialTheme.typography.labelSmall)
+                         Icon(
+                             Icons.Default.DomainDisabled, 
+                             contentDescription = null, 
+                             modifier = Modifier.size(48.dp),
+                             tint = MaterialTheme.colorScheme.outlineVariant
+                         )
+                         Spacer(Modifier.height(16.dp))
+                         Text(
+                             "No departments available", 
+                             style = MaterialTheme.typography.bodyMedium,
+                             color = MaterialTheme.colorScheme.onSurfaceVariant
+                         )
                      }
                  }
              }
