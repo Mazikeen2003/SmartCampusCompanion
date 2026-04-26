@@ -18,6 +18,7 @@ import com.example.smartcampuscompanion.ui.screens.announcement.AnnouncementScre
 import com.example.smartcampuscompanion.ui.screens.announcement.AnnouncementDetailScreen
 import com.example.smartcampuscompanion.ui.screens.announcement.AddAnnouncementScreen
 import com.example.smartcampuscompanion.ui.screens.settings.SettingsScreen
+import com.example.smartcampuscompanion.ui.components.NotificationObserver
 import com.example.smartcampuscompanion.ui.viewmodel.AuthViewModel
 import com.example.smartcampuscompanion.ui.viewmodel.TaskViewModel
 import com.example.smartcampuscompanion.ui.viewmodel.AnnouncementViewModel
@@ -28,7 +29,7 @@ fun NavGraph(
     navController: NavHostController,
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit,
-    startDestination: String = Routes.LOGIN_REGISTER
+    startDestination: String = Routes.LOGIN_REGISTER,
 ) {
     val authViewModel: AuthViewModel = hiltViewModel()
 
@@ -42,13 +43,19 @@ fun NavGraph(
                 onLoginSuccess = { navController.navigate(Routes.DASHBOARD) { popUpTo(Routes.LOGIN_REGISTER) { inclusive = true } } },
                 onRegisterSuccess = { 
                     // Registration success is now handled via a dialog in RegisterScreen
-                    // We don't navigate to Dashboard anymore.
                 }
             )
         }
         composable(Routes.DASHBOARD) {
             val departmentViewModel: DepartmentViewModel = hiltViewModel()
+            val announcementViewModel: AnnouncementViewModel = hiltViewModel() // Used for notification observer
             val userRole by authViewModel.userRole.collectAsState()
+            
+            // Member 3 & 4: Auto-notify students of new announcements in real-time
+            NotificationObserver(
+                repository = announcementViewModel.repositoryForNotification,
+                userRole = userRole ?: "student"
+            )
 
             DashboardScreen(
                 onLogout = {

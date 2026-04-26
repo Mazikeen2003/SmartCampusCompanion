@@ -8,10 +8,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -26,7 +26,7 @@ fun AddEditTaskScreen(
     viewModel: TaskViewModel,
     taskId: Int? = null,
     onSaveDone: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
@@ -115,7 +115,7 @@ fun AddEditTaskScreen(
                 onValueChange = { viewModel.handleIntent(TaskIntent.UpdateDescription(it)) },
                 label = { Text("Notes (Optional)") },
                 placeholder = { Text("Add details or instructions...") },
-                leadingIcon = { Icon(Icons.Default.Notes, contentDescription = null) },
+                leadingIcon = { Icon(Icons.AutoMirrored.Filled.Notes, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 4,
                 shape = MaterialTheme.shapes.large,
@@ -144,12 +144,12 @@ fun AddEditTaskScreen(
                         DatePickerDialog(
                             context,
                             { _, year, month, day ->
-                                val date = String.format("%02d/%02d/%d", day, month + 1, year)
+                                val date = String.format(Locale.getDefault(), "%02d/%02d/%d", day, month + 1, year)
                                 viewModel.handleIntent(TaskIntent.UpdateDate(date))
                             },
-                            calendar.get(Calendar.YEAR),
-                            calendar.get(Calendar.MONTH),
-                            calendar.get(Calendar.DAY_OF_MONTH)
+                            calendar[Calendar.YEAR],
+                            calendar[Calendar.MONTH],
+                            calendar[Calendar.DAY_OF_MONTH]
                         ).show()
                     },
                     modifier = Modifier.weight(1f).height(56.dp),
@@ -167,11 +167,11 @@ fun AddEditTaskScreen(
                         TimePickerDialog(
                             context,
                             { _, hour, minute ->
-                                val time = String.format("%02d:%02d", hour, minute)
+                                val time = String.format(Locale.getDefault(), "%02d:%02d", hour, minute)
                                 viewModel.handleIntent(TaskIntent.UpdateTime(time))
                             },
-                            calendar.get(Calendar.HOUR_OF_DAY),
-                            calendar.get(Calendar.MINUTE),
+                            calendar[Calendar.HOUR_OF_DAY],
+                            calendar[Calendar.MINUTE],
                             true
                         ).show()
                     },

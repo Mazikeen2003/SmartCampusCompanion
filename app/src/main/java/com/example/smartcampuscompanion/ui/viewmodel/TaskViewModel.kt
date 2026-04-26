@@ -15,7 +15,7 @@ import javax.inject.Inject
 // Fetches remote data on initialization
 @HiltViewModel
 class TaskViewModel @Inject constructor(
-    private val repository: TaskRepository
+    private val repository: TaskRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TaskState())
@@ -69,6 +69,7 @@ class TaskViewModel @Inject constructor(
                 repository.delete(task)
                 _effect.send(TaskEffect.ShowSnackbar("Task deleted successfully"))
             } catch (e: Exception) {
+                e.printStackTrace()
                 _effect.send(TaskEffect.ShowSnackbar("Failed to delete task"))
             }
         }

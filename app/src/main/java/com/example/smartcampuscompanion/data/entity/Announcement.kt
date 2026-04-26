@@ -7,8 +7,8 @@ import androidx.room.PrimaryKey
 data class Announcement(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val title: String,
-    val content: String,
-    val date: Long,
+    val title: String = "",
+    val content: String = "",
+    val date: Long = 0,
     val isRead: Boolean = false
 )

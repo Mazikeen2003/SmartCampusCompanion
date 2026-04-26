@@ -19,17 +19,17 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
     private val sharedPreferences = context.getSharedPreferences("user_session", Context.MODE_PRIVATE)
 
-    private val _isLoading = MutableStateFlow(false)
+    private val _isLoading = MutableStateFlow(value = false)
     val isLoading = _isLoading.asStateFlow()
 
-    private val _isRegisterSuccess = MutableStateFlow(false)
+    private val _isRegisterSuccess = MutableStateFlow(value = false)
     val isRegisterSuccess = _isRegisterSuccess.asStateFlow()
 
-    private val _isSuccess = MutableStateFlow(false)
+    private val _isSuccess = MutableStateFlow(value = false)
     val isSuccess = _isSuccess.asStateFlow()
 
     private val _errorMessage = MutableStateFlow<String?>(null)
@@ -60,6 +60,7 @@ class AuthViewModel @Inject constructor(
                 val role = document.getString("role") ?: "student"
                 _userRole.value = role
             } catch (e: Exception) {
+                e.printStackTrace()
                 _userRole.value = "student"
             }
         }
@@ -85,9 +86,7 @@ class AuthViewModel @Inject constructor(
                 }
 
                 // 3. Fetch Role bago sabihing Success
-                val document = firestore.collection("users").document(email).get().await()
-                _userRole.value = document.getString("role") ?: "student"
-                _isSuccess.value = true
+                fetchAndSetUserRole(email)
 
             } catch (e: Exception) {
                 _isLoading.value = false
@@ -96,21 +95,47 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private fun fetchUserRole(email: String) {
+    fun signInWithGoogle(idToken: String) {
         viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
             try {
-                val document = firestore.collection("users").document(email).get().await()
-                val role = document.getString("role") ?: "student"
-
-                _userRole.value = role
-                _isSuccess.value = true
+                val credential = com.google.firebase.auth.GoogleAuthProvider.getCredential(idToken, null)
+                val authResult = firebaseAuth.signInWithCredential(credential).await()
+                val user = authResult.user
+                
+                if (user != null) {
+                    val email = user.email ?: ""
+                    // Check if user exists in Firestore to assign role
+                    val doc = firestore.collection("users").document(email).get().await()
+                    if (!doc.exists()) {
+                        // First time Google user: Auto-assign 'student' role
+                        val userData = hashMapOf("email" to email, "role" to "student")
+                        firestore.collection("users").document(email).set(userData).await()
+                        _userRole.value = "student"
+                    } else {
+                        _userRole.value = doc.getString("role") ?: "student"
+                    }
+                    _isSuccess.value = true
+                }
             } catch (e: Exception) {
-                // Default to student if firestore fails but auth is successful
-                _userRole.value = "student"
-                _isSuccess.value = true
+                _errorMessage.value = e.localizedMessage ?: "Google Sign-In failed"
             } finally {
                 _isLoading.value = false
             }
+        }
+    }
+
+    private suspend fun fetchAndSetUserRole(email: String) {
+        try {
+            val document = firestore.collection("users").document(email).get().await()
+            _userRole.value = document.getString("role") ?: "student"
+            _isSuccess.value = true
+        } catch (e: Exception) {
+            _userRole.value = "student"
+            _isSuccess.value = true
+        } finally {
+            _isLoading.value = false
         }
     }
 

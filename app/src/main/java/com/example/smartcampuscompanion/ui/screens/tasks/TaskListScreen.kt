@@ -1,6 +1,5 @@
 package com.example.smartcampuscompanion.ui.screens.tasks
 
-import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,7 +27,7 @@ fun TaskListScreen(
     viewModel: TaskViewModel,
     onAddClick: () -> Unit,
     onEditClick: (Int) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -97,7 +96,7 @@ fun TaskListScreen(
                 groupedTasks.forEach { (date, tasksForDate) ->
                     item {
                         Text(
-                            text = if (date.isEmpty()) "No Date" else date,
+                            text = date.ifEmpty { "No Date" },
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary,
@@ -108,9 +107,8 @@ fun TaskListScreen(
                         TaskItem(
                             task = task,
                             onDelete = { viewModel.handleIntent(TaskIntent.DeleteTask(task)) },
-                            onEdit = { onEditClick(task.id) },
-                            onToggle = { viewModel.handleIntent(TaskIntent.ToggleTaskCompletion(task)) }
-                        )
+                            onEdit = { onEditClick(task.id) }
+                        ) { viewModel.handleIntent(TaskIntent.ToggleTaskCompletion(task)) }
                     }
                 }
             }

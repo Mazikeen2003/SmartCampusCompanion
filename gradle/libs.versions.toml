@@ -1,8 +1,8 @@
 [versions]
 # Core Tooling
 agp = "8.7.2"
-kotlin = "2.0.21"
-ksp = "2.0.21-1.0.27" # Dapat match ang version nito sa Kotlin version mo
+kotlin = "2.1.0"
+ksp = "2.1.0-1.0.29"
 googleServices = "4.4.2"
 
 # Androidx & UI
@@ -21,6 +21,8 @@ room = "2.6.1"
 
 # Firebase
 firebaseBom = "33.5.1"
+playServicesAuth = "21.3.0"
+kotlinxCoroutinesPlayServices = "1.8.0"
 
 [libraries]
 # AndroidX Core
@@ -57,6 +59,8 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
+kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
