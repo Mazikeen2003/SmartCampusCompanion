@@ -80,9 +80,10 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.messaging)
+    implementation(libs.play.services.auth)
 
-    // Play Services Coroutines (IMPORTANTE: Para gumana ang .await() sa AuthViewModel mo)
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
+    // Play Services Coroutines (IMPORTANTE: Para gumana ang .await() sa AuthViewModel)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
