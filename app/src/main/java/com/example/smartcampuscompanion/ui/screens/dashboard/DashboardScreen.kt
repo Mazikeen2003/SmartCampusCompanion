@@ -94,6 +94,13 @@ fun DashboardScreen(
                         }
                     }
 
+                    DrawerItem("Settings", Icons.Default.Settings) {
+                        scope.launch {
+                            drawerState.close()
+                            onNavigateToSettings()
+                        }
+                    }
+
                     Spacer(modifier = Modifier.weight(1f))
                     DrawerItem("Sign Out", Icons.AutoMirrored.Filled.ExitToApp, MaterialTheme.colorScheme.error) { onLogout() }
                     Spacer(modifier = Modifier.height(32.dp))
