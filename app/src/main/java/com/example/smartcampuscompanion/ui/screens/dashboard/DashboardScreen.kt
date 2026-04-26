@@ -1,6 +1,6 @@
 package com.example.smartcampuscompanion.ui.screens.dashboard
 
-import androidx.compose.animation.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,7 +21,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.smartcampuscompanion.R
 import androidx.compose.ui.unit.sp
 import com.example.smartcampuscompanion.data.entity.Department
 import com.example.smartcampuscompanion.ui.screens.campus.CampusInfoScreen
@@ -58,7 +60,20 @@ fun DashboardScreen(
                 drawerTonalElevation = 0.dp
             ) {
                 Column(modifier = Modifier.fillMaxHeight().padding(horizontal = 16.dp)) {
-                    Spacer(Modifier.height(64.dp))
+                    Spacer(Modifier.height(48.dp))
+                    Surface(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(CircleShape),
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                            contentDescription = "App Logo",
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                    Spacer(Modifier.height(16.dp))
                     Text(
                         text = "Smart Campus",
                         style = MaterialTheme.typography.headlineSmall,

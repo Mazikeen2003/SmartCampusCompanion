@@ -1,57 +1,61 @@
-# 🎓 Smart Campus Companion - Phase 3 (Finals)
+# Smart Campus Companion - Phase 3 Final Period
 
-## 📱 App Overview
-The **Smart Campus Companion** is a comprehensive mobile ecosystem designed for modern university life. In the Final Phase, we have evolved into a cloud-integrated platform, transitioning from local-only storage to a high-performance **Firebase Firestore** backend with real-time synchronization and role-based access control.
-
-### ✨ Key Features (Finals Update)
-*   **🔐 Secure Authentication & Role-Based Access (RBAC):**
-    *   **Firebase Auth Integration:** Secure login and registration.
-    *   **Identity Management:** Automatic role detection (Admin vs. Student).
-    *   **Permission-Based UI:** Dynamic interface adaptation. Admins gain "Add Announcement" capabilities, while Students receive a streamlined "Portal" view.
-*   **☁️ Cloud-Sync Architecture (Hybrid Persistence):**
-    *   **Firestore Integration:** Announcements and Tasks are synced to the cloud for multi-device access.
-    *   **Room Database Offline Cache:** Full functionality even without internet connectivity.
-    *   **Seamless Data Flow:** Repository-pattern implementation ensures data consistency between local and remote sources.
-*   **⚙️ Advanced Settings & Personalization:**
-    *   **Notification Control:** System for managing campus alerts.
-    *   **Enhanced Dark Mode:** Refined Material 3 color palettes for better readability.
-*   **🎨 UI/UX Polish:**
-    *   **State-Aware UI:** Comprehensive loading indicators, error handling, and empty states.
-    *   **Clean Layouts:** Professionally designed dashboard with fluid transitions and modern aesthetics.
+## Project Overview
+The Smart Campus Companion is a mobile application designed to assist university students with viewing campus information, managing academic tasks, and reading campus announcements.
 
 ---
 
-## 👥 Team Composition & Roles
-*   **Team Leader:** Bon Gershan - *Project oversight and architectural decisions.*
-*   **Git Manager:** Biblanias, Iron L - *Gitflow management (Develop/Release/Main), PR enforcement, and v2.0-final release.*
-*   **Backend & Data Integration:** Bermas, John Carlos - *Firebase/Firestore logic, Remote Data Source implementation, and Hybrid Sync strategy.*
-*   **Feature & Logic Engineer:** Bermas, John Carlos - *Role-based logic, ViewModel state management, and core feature engineering.*
-*   **UI/UX Developer:** Besa, Jennelyn - *Settings module, Material 3 theming, responsive layouts, and UX feedback loops.*
+## 👥 Team Composition & Evolution (Prelim to Finals)
+
+### MEMBER 1 – BIBLANIAS
+**Role:** Git Manager & Release Engineer  
+**Responsibilities (Prelim to Finals):**
+*   **Prelim:** Established repository structure and basic Git workflow.
+*   **Midterm:** Managed feature branches and resolved initial merge conflicts.
+*   **Finals:** Enforced strict Gitflow (main, develop, release, hotfix), integrated all modules, handled final versioning (`v2.0-final`), and maintained `Changelog.md`.
+*   **🔒 Ownership:** `navigation/*`, `MainActivity.kt`, Git management, and Release lifecycle.
 
 ---
 
-## 🏗️ Technical Architecture
-The project utilizes a **Clean Architecture** approach with **MVVM** and a dedicated **Remote Data Layer**.
-
-### 🛠️ Technical Focus
-*   **Clean Data Layer:** Separation of concerns between `LocalDataSource` (Room) and `RemoteDataSource` (Firestore).
-*   **Hilt Dependency Injection:** Scalable injection of Firebase services and Repository abstractions.
-*   **Coroutine Flow:** Reactive data streams from Room/Firestore to the UI.
-*   **Role Security:** Server-side role validation via Firestore security rules (simulated in logic).
-
----
-
-## 🚀 Git Workflow & Requirements
-*   **Gitflow Pattern:** `main`, `develop`, `release`, and `hotfix` branches.
-*   **Versioning:** Milestone tags `v1.0-midterm` and `v2.0-final`.
-*   **PR Workflow:** Mandatory reviews and conflict resolution documentation.
+### MEMBER 2 – BERMAS
+**Role:** Backend & Data Integration Engineer  
+**Responsibilities (Prelim to Finals):**
+*   **Prelim:** Designed initial data models and mock data providers.
+*   **Midterm:** Implemented local persistence using Room Database.
+*   **Finals:** Migrated project to Firebase/Firestore, implemented real-time sync listeners, and optimized async data mapping from API to Entity.
+*   **🔒 Ownership:** `data/remote/*`, `data/repository/*`, and core Firebase logic.
 
 ---
 
-## 📝 Reflection
+### MEMBER 3 – Besa
+**Role:** Feature & Logic Engineer  
+**Responsibilities (Prelim to Finals):**
+*   **Prelim:** Developed core screen logic and basic authentication flow.
+*   **Midterm:** Refactored project to MVVM architecture with ViewModels.
+*   **Finals:** Implemented Role-Based Access Control (Admin/Student logic), Google Sign-In authentication flow, and robust State management (`StateFlow`).
+*   **🔒 Ownership:** `ui/viewmodel/*` and business logic across all modules.
 
-See the full reflection here:
+---
 
-[Reflection Document](reflection.md)
+### MEMBER 4 – Bon
+**Role:** UI/UX Engineer  
+**Responsibilities (Prelim to Finals):**
+*   **Prelim:** Created initial Jetpack Compose layouts and themes.
+*   **Midterm:** Developed complex UI components for Task and Announcement lists.
+*   **Finals:** Polished the app to Material 3 High-Fidelity standards, implemented Dark Mode, refined loading/error/empty states, and designed the branding assets.
+*   **🔒 Ownership:** `ui/screens/*`, `ui/components/*`, and `theme/*`.
 
-**Status:** ✅ Phase 2 Completed | **Target:** Finals Period Integration
+---
+
+## 🚀 Key Final Features
+*   **Google Sign-In:** One-tap secure login with auto-role provisioning.
+*   **Real-time Notifications:** Instant alerts for new campus announcements.
+*   **Role-Based Dashboards:** Distinct visual identities for Admin vs. Student accounts.
+*   **Hybrid Sync:** Offline capability with Room and cloud sync with Firestore.
+
+---
+
+## 🛠️ Setup Instructions
+1.  Add your `google-services.json` to the `app/` directory.
+2.  Ensure you have a valid SHA-1 fingerprint in the Firebase Console.
+3.  Build and run using Android Studio Ladybug or later.
