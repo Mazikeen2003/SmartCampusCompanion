@@ -85,9 +85,7 @@ class AuthViewModel @Inject constructor(
                 }
 
                 // 3. Fetch Role bago sabihing Success
-                val document = firestore.collection("users").document(email).get().await()
-                _userRole.value = document.getString("role") ?: "student"
-                _isSuccess.value = true
+                fetchAndSetUserRole(email)
 
             } catch (e: Exception) {
                 _isLoading.value = false
@@ -96,21 +94,47 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private fun fetchUserRole(email: String) {
+    fun signInWithGoogle(idToken: String) {
         viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
             try {
-                val document = firestore.collection("users").document(email).get().await()
-                val role = document.getString("role") ?: "student"
-
-                _userRole.value = role
-                _isSuccess.value = true
+                val credential = com.google.firebase.auth.GoogleAuthProvider.getCredential(idToken, null)
+                val authResult = firebaseAuth.signInWithCredential(credential).await()
+                val user = authResult.user
+                
+                if (user != null) {
+                    val email = user.email ?: ""
+                    // Check if user exists in Firestore to assign role
+                    val doc = firestore.collection("users").document(email).get().await()
+                    if (!doc.exists()) {
+                        // First time Google user: Auto-assign 'student' role
+                        val userData = hashMapOf("email" to email, "role" to "student")
+                        firestore.collection("users").document(email).set(userData).await()
+                        _userRole.value = "student"
+                    } else {
+                        _userRole.value = doc.getString("role") ?: "student"
+                    }
+                    _isSuccess.value = true
+                }
             } catch (e: Exception) {
-                // Default to student if firestore fails but auth is successful
-                _userRole.value = "student"
-                _isSuccess.value = true
+                _errorMessage.value = e.localizedMessage ?: "Google Sign-In failed"
             } finally {
                 _isLoading.value = false
             }
+        }
+    }
+
+    private suspend fun fetchAndSetUserRole(email: String) {
+        try {
+            val document = firestore.collection("users").document(email).get().await()
+            _userRole.value = document.getString("role") ?: "student"
+            _isSuccess.value = true
+        } catch (e: Exception) {
+            _userRole.value = "student"
+            _isSuccess.value = true
+        } finally {
+            _isLoading.value = false
         }
     }
 
