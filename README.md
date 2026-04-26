@@ -1,43 +1,61 @@
-## App Description
-Smart Campus Companion is an Android mobile application designed to assist university students with accessing essential campus-related information in a simple and organized way. For the Prelim phase, the application focuses on establishing the project foundation, basic user interface, and Git collaboration workflow.
-The app allows users to log in using mock authentication, view a dashboard with navigation options, and access a campus information module that displays a static list of departments and their contact details. This phase emphasizes proper project structure, UI development using Jetpack Compose, and collaborative development using Git and GitHub.
+# Smart Campus Companion - Phase 3 Final Period
 
-## Team Roles (Prelim Phase)
-
-- *Iron Biblanias – Git Manager & Integrator* 
-  Responsible for repository setup, branch management, pull request reviews, and integrating all features into the develop branch. Ensures proper Git workflow and that all members meet commit requirements.
-
-- *Gershan Carl Bon – UI Designer (Login & Theme)*  
-  Responsible for applying the Material theme and designing the Login screen using Jetpack Compose, including input fields and buttons with proper layout and responsiveness.
-
-- *John Carl Bermas – UI & Navigation Developer*  
-  Responsible for creating the Dashboard screen and implementing app navigation between Login, Dashboard, and Campus Information screens.
-
-- *Jennelyn Besa – Feature & UI Developer*  
-  Responsible for implementing the Campus Information module, mock authentication logic, and session storage using SharedPreferences.
-
-- *Iron Biblanias – UI Support & Enhancement Developer*  
-  Responsible for creating reusable UI components and improving UI consistency and basic visual feedback across all screens.
+## Project Overview
+The Smart Campus Companion is a mobile application designed to assist university students with viewing campus information, managing academic tasks, and reading campus announcements.
 
 ---
-## Git Workflow
 
-The team follows a structured Git workflow to support parallel development and collaboration:
+## 👥 Team Composition & Evolution (Prelim to Finals)
 
-- **Main Branch (main)**  
-  Protected branch containing stable code only. No direct commits are allowed.
+### MEMBER 1 – BIBLANIAS
+**Role:** Git Manager & Release Engineer  
+**Responsibilities (Prelim to Finals):**
+*   **Prelim:** Established repository structure and basic Git workflow.
+*   **Midterm:** Managed feature branches and resolved initial merge conflicts.
+*   **Finals:** Enforced strict Gitflow (main, develop, release, hotfix), integrated all modules, handled final versioning (`v2.0-final`), and maintained `Changelog.md`.
+*   **🔒 Ownership:** `navigation/*`, `MainActivity.kt`, Git management, and Release lifecycle.
 
-- **Develop Branch (develop)**  
-  Integration branch where completed features are merged after review.
+---
 
-- *Feature Branches*  
-  Each member works on a separate feature branch created from develop (example: feature/login-ui, feature/dashboard-ui).
+### MEMBER 2 – BERMAS
+**Role:** Backend & Data Integration Engineer  
+**Responsibilities (Prelim to Finals):**
+*   **Prelim:** Designed initial data models and mock data providers.
+*   **Midterm:** Implemented local persistence using Room Database.
+*   **Finals:** Migrated project to Firebase/Firestore, implemented real-time sync listeners, and optimized async data mapping from API to Entity.
+*   **🔒 Ownership:** `data/remote/*`, `data/repository/*`, and core Firebase logic.
 
-### Workflow Steps:
-1. Create a feature branch from develop
-2. Commit changes frequently with meaningful commit messages
-3. Push the feature branch to GitHub
-4. Open a Pull Request targeting develop
-5. Review and merge the Pull Request after successful build and basic testing
+---
 
-# Each team member contributes at least *five (5) commits* during the Prelim phase to demonstrate active participation and collaboration.
+### MEMBER 3 – Besa
+**Role:** Feature & Logic Engineer  
+**Responsibilities (Prelim to Finals):**
+*   **Prelim:** Developed core screen logic and basic authentication flow.
+*   **Midterm:** Refactored project to MVVM architecture with ViewModels.
+*   **Finals:** Implemented Role-Based Access Control (Admin/Student logic), Google Sign-In authentication flow, and robust State management (`StateFlow`).
+*   **🔒 Ownership:** `ui/viewmodel/*` and business logic across all modules.
+
+---
+
+### MEMBER 4 – Bon
+**Role:** UI/UX Engineer  
+**Responsibilities (Prelim to Finals):**
+*   **Prelim:** Created initial Jetpack Compose layouts and themes.
+*   **Midterm:** Developed complex UI components for Task and Announcement lists.
+*   **Finals:** Polished the app to Material 3 High-Fidelity standards, implemented Dark Mode, refined loading/error/empty states, and designed the branding assets.
+*   **🔒 Ownership:** `ui/screens/*`, `ui/components/*`, and `theme/*`.
+
+---
+
+## 🚀 Key Final Features
+*   **Google Sign-In:** One-tap secure login with auto-role provisioning.
+*   **Real-time Notifications:** Instant alerts for new campus announcements.
+*   **Role-Based Dashboards:** Distinct visual identities for Admin vs. Student accounts.
+*   **Hybrid Sync:** Offline capability with Room and cloud sync with Firestore.
+
+---
+
+## 🛠️ Setup Instructions
+1.  Add your `google-services.json` to the `app/` directory.
+2.  Ensure you have a valid SHA-1 fingerprint in the Firebase Console.
+3.  Build and run using Android Studio Ladybug or later.

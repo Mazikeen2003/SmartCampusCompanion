@@ -1,27 +1,52 @@
 package com.example.smartcampuscompanion
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.smartcampuscompanion.ui.theme.SmartCampusCompanionTheme
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.*
+import androidx.navigation.compose.rememberNavController
+import com.example.smartcampuscompanion.navigation.NavGraph
+import com.example.smartcampuscompanion.theme.SmartCampusCompanionTheme
+import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            SmartCampusCompanionTheme {
+        
+        // Subscribe to announcements topic
+        FirebaseMessaging.getInstance().subscribeToTopic("announcements")
 
+        setContent {
+            var isDarkMode by remember { mutableStateOf(false) }
+
+            // Request Notification Permission for Android 13+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val launcher = rememberLauncherForActivityResult(
+                    ActivityResultContracts.RequestPermission()
+                ) { _ ->
+                    // Logic based on whether permission was granted
+                }
+                LaunchedEffect(Unit) {
+                    launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+            
+            SmartCampusCompanionTheme(darkTheme = isDarkMode) {
+                val navController = rememberNavController()
+                NavGraph(
+                    navController = navController,
+                    isDarkMode = isDarkMode,
+                    onThemeToggle = { isDarkMode = !isDarkMode }
+                )
             }
         }
     }
 }
-
