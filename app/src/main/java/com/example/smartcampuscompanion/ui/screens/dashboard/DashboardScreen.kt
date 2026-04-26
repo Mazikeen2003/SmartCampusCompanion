@@ -7,7 +7,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Announcement
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.PlaylistAddCheck
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -67,7 +69,7 @@ fun DashboardScreen(
 
                     DrawerItem(
                         if (userRole == "admin") "Broadcasts" else "Announcements", 
-                        Icons.Default.Announcement
+                        Icons.AutoMirrored.Filled.Announcement
                     ) {
                         scope.launch {
                             drawerState.close()
@@ -93,7 +95,7 @@ fun DashboardScreen(
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
-                    DrawerItem("Sign Out", Icons.Default.ExitToApp, MaterialTheme.colorScheme.error) { onLogout() }
+                    DrawerItem("Sign Out", Icons.AutoMirrored.Filled.ExitToApp, MaterialTheme.colorScheme.error) { onLogout() }
                     Spacer(modifier = Modifier.height(32.dp))
                 }
             }

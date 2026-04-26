@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 val launcher = rememberLauncherForActivityResult(
                     ActivityResultContracts.RequestPermission()
-                ) { isGranted ->
+                ) { _ ->
                     // Logic based on whether permission was granted
                 }
                 LaunchedEffect(Unit) {

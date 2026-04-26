@@ -29,7 +29,7 @@ fun NavGraph(
     navController: NavHostController,
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit,
-    startDestination: String = Routes.LOGIN_REGISTER
+    startDestination: String = Routes.LOGIN_REGISTER,
 ) {
     val authViewModel: AuthViewModel = hiltViewModel()
 
@@ -43,7 +43,6 @@ fun NavGraph(
                 onLoginSuccess = { navController.navigate(Routes.DASHBOARD) { popUpTo(Routes.LOGIN_REGISTER) { inclusive = true } } },
                 onRegisterSuccess = { 
                     // Registration success is now handled via a dialog in RegisterScreen
-                    // We don't navigate to Dashboard anymore.
                 }
             )
         }

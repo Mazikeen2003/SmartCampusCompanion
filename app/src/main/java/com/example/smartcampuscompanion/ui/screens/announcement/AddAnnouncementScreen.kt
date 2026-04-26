@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddAnnouncementScreen(
     onBackClick: () -> Unit,
-    viewModel: AnnouncementViewModel = hiltViewModel()
+    viewModel: AnnouncementViewModel = hiltViewModel(),
 ) {
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }

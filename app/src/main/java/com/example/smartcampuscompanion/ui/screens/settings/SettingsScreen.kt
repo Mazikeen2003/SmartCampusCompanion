@@ -16,9 +16,9 @@ import androidx.compose.ui.unit.dp
 fun SettingsScreen(
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
 ) {
-    var notificationsEnabled by remember { mutableStateOf(true) }
+    var notificationsEnabled by remember { mutableStateOf(value = true) }
 
     Scaffold(
         topBar = {

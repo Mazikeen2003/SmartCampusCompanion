@@ -32,7 +32,7 @@ import java.util.*
 fun AnnouncementScreen(
     viewModel: AnnouncementViewModel,
     onAnnouncementClick: (Int) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -72,9 +72,8 @@ fun AnnouncementScreen(
             ) {
                 items(uiState.announcements, key = { it.id }) { announcement ->
                     AnnouncementItem(
-                        announcement = announcement,
-                        onClick = { onAnnouncementClick(announcement.id) }
-                    )
+                        announcement = announcement
+                    ) { onAnnouncementClick(announcement.id) }
                 }
             }
         }

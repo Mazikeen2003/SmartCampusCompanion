@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AnnouncementViewModel @Inject constructor(
-    private val repository: AnnouncementRepository
+    private val repository: AnnouncementRepository,
 ) : ViewModel() {
     // Expose repository for the Notification Observer
     val repositoryForNotification = repository
@@ -85,6 +85,7 @@ class AnnouncementViewModel @Inject constructor(
             try {
                 repository.deleteById(id)
             } catch (e: Exception) {
+                e.printStackTrace()
                 _uiState.update { it.copy(error = "Delete failed") }
             }
         }
@@ -104,7 +105,7 @@ class AnnouncementViewModel @Inject constructor(
         viewModelScope.launch {
             val announcement = repository.getAnnouncementById(id)
             _uiState.update { it.copy(currentAnnouncement = announcement) }
-            if (announcement != null && !announcement.isRead) {
+            if (announcement != null && (!announcement.isRead)) {
                 markAsRead(id)
             }
         }

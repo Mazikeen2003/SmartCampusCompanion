@@ -19,17 +19,17 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
     private val sharedPreferences = context.getSharedPreferences("user_session", Context.MODE_PRIVATE)
 
-    private val _isLoading = MutableStateFlow(false)
+    private val _isLoading = MutableStateFlow(value = false)
     val isLoading = _isLoading.asStateFlow()
 
-    private val _isRegisterSuccess = MutableStateFlow(false)
+    private val _isRegisterSuccess = MutableStateFlow(value = false)
     val isRegisterSuccess = _isRegisterSuccess.asStateFlow()
 
-    private val _isSuccess = MutableStateFlow(false)
+    private val _isSuccess = MutableStateFlow(value = false)
     val isSuccess = _isSuccess.asStateFlow()
 
     private val _errorMessage = MutableStateFlow<String?>(null)
@@ -60,6 +60,7 @@ class AuthViewModel @Inject constructor(
                 val role = document.getString("role") ?: "student"
                 _userRole.value = role
             } catch (e: Exception) {
+                e.printStackTrace()
                 _userRole.value = "student"
             }
         }
