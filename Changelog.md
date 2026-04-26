@@ -1,30 +1,24 @@
 # Changelog - Smart Campus Companion
 
-## [2.0.0-rc1] - 2026-04-16
+## [2.0.0] - 2026-04-26 (Final Submission)
 
 ### Added
-- **Role-Based UI Implementation**: Integrated conditional rendering in `DashboardScreen.kt`.
-    - **Admin View**: Displays "ADMIN PANEL" header and enables the Floating Action Button (+) for announcement creation.
-    - **Student View**: Displays "STUDENT PORTAL" with a read-only interface.
-- **Firestore User Identity**: Implemented server-side role fetching in `AuthViewModel.kt`. The app now identifies user permissions (Admin/Student) directly from the Firestore `users` collection.
-- **Hybrid Data Strategy (Room + Firestore)**:
-    - Updated `AnnouncementRepository` and `TaskRepository` to support dual-persistence.
-    - Announcements and Tasks are saved locally in **Room** for offline access and synced to **Firebase Firestore** for real-time cloud visibility.
-- **Firebase SDK**: Fully integrated Firebase BOM, Authentication, and Firestore for production use.
-- **Hilt Setup**: Created `FirebaseModule.kt` for Dependency Injection of Firebase services.
+- **Google Sign-In**: Integrated secure one-tap authentication with automatic user registration.
+- **Automated Real-Time Notifications**: Implemented a Firestore Snapshot Listener that instantly notifies students when an Admin posts a new announcement.
+- **Notification Customization**: Added "Silent Mode" and "Push Toggle" in Settings to allow users to control alert behavior (ring vs. silent).
+- **High-Fidelity UI Branding**: Designed and integrated a custom App Icon and polished the Dashboard/Login headers with the new branding assets.
+- **Status Bar Color Match**: Implemented dynamic status bar color changing to match the Material 3 surface tones.
 
 ### Changed
-- **Architectural Unification**: Successfully migrated the project from Retrofit/REST API to a pure **Firebase Firestore** backend.
-- **Build Standardization**:
-    - Upgraded Project SDK to **Level 35** and **Java 17** for Hilt and Room compatibility.
-    - Added `kotlinx-coroutines-play-services` to support asynchronous Firebase tasks using `await()`.
-- **Navigation Base**: Established `NavGraph.kt` with dynamic `startDestination` based on active Firebase Auth sessions.
+- **Visual Identity Separation**: Redesigned the Admin and Student dashboards with distinct color schemes (System Red vs. Resource Blue) for clear role differentiation.
+- **Dependency Management**: Fully migrated to Gradle Version Catalog (`libs.versions.toml`) for standardized and error-free builds.
+- **README Overhaul**: Documented the full team evolution and detailed role delegations from Prelim to Finals.
 
 ### Fixed
-- **Dagger/Hilt MissingBinding**: Resolved critical build errors by removing legacy `ApiService` and `RetrofitClient` dependencies.
-- **State Synchronization**: Fixed a bug where Admin features would not appear immediately by implementing forced role-fetching upon login.
-- **Merge Conflict Resolution**: Handled complex conflicts in `NavGraph.kt`, `build.gradle.kts`, and `Repository` files during team integration.
+- **Hilt MissingBinding**: Resolved Context injection issues in `AuthViewModel`.
+- **Icon Deprecations**: Migrated all icons to the modern `AutoMirrored` Material 3 versions.
+- **FCM Topic Lifecycle**: Fixed a bug where users remained subscribed to notifications after logging out.
+- **Gradle Sync Errors**: Resolved KSP/Kotlin version mismatches to ensure a stable `BUILD SUCCESSFUL` state.
 
 ### Removed
-- **Legacy Retrofit Code**: Deleted all unused DTOs, API interfaces, and Retrofit configurations (`ApiService.kt`, `RetrofitClient.kt`).
-- **Mock Authentication**: Eliminated hardcoded login checks in favor of real Firebase Authentication.
+- **Manual FCM Keys**: Cleaned up the project by removing unnecessary manual key configurations in favor of the automated `google-services.json` flow.

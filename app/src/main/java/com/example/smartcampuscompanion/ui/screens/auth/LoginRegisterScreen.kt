@@ -33,6 +33,11 @@ import com.example.smartcampuscompanion.R
 import com.example.smartcampuscompanion.theme.SmartCampusCompanionTheme
 import com.example.smartcampuscompanion.ui.viewmodel.AuthViewModel
 
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Surface
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginRegisterScreen(
@@ -51,17 +56,35 @@ fun LoginRegisterScreen(
         verticalArrangement = Arrangement.Center
     ) {
         item {
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                contentDescription = "Logo",
-                modifier = Modifier.size(150.dp)
-            )
+            Spacer(modifier = Modifier.height(48.dp))
+            Surface(
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape),
+                color = MaterialTheme.colorScheme.primaryContainer
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                    contentDescription = "Logo",
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "Smart Campus Companion",
-                style = MaterialTheme.typography.headlineMedium,
+                text = "SMART CAMPUS",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Black,
+                color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            Text(
+                text = "COMPANION",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.secondary,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(48.dp))
 
             Card(
                 modifier = Modifier.padding(horizontal = 16.dp),

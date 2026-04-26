@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.drop
 @Composable
 fun NotificationObserver(
     repository: AnnouncementRepository,
-    userRole: String
+    userRole: String,
 ) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("app_settings", Context.MODE_PRIVATE) }
@@ -31,7 +31,7 @@ fun NotificationObserver(
             val silent = prefs.getBoolean("notifications_silent", false)
             
             // Only notify students, if enabled, and only if it was posted very recently (last 30 seconds)
-            if (userRole == "student" && enabled && latest != null && (System.currentTimeMillis() - latest.date) < 30000) {
+            if (userRole == "student" && enabled && latest != null && ((System.currentTimeMillis() - latest.date) < 30000)) {
                 showLocalNotification(context, latest.title, latest.content, silent)
             }
         }

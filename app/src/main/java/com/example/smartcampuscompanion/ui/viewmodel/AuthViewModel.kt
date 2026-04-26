@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.smartcampuscompanion.data.entity.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -132,6 +133,7 @@ class AuthViewModel @Inject constructor(
             _userRole.value = document.getString("role") ?: "student"
             _isSuccess.value = true
         } catch (e: Exception) {
+            e.printStackTrace()
             _userRole.value = "student"
             _isSuccess.value = true
         } finally {
@@ -161,7 +163,7 @@ class AuthViewModel @Inject constructor(
     private suspend fun saveUserToFirestore(user: User) {
         val userData = hashMapOf(
             "email" to user.email,
-            "role" to user.role // Dito nase-save kung 'admin' o 'student'
+            "role" to user.role, // Dito nase-save kung 'admin' o 'student'
         )
         try {
             firestore.collection("users").document(user.email).set(userData).await()
@@ -190,6 +192,9 @@ class AuthViewModel @Inject constructor(
     fun isLoggedIn(): Boolean = firebaseAuth.currentUser != null
 
     fun logout() {
+        // Stop receiving notifications on logout
+        FirebaseMessaging.getInstance().unsubscribeFromTopic("announcements")
+
         firebaseAuth.signOut()
         _userRole.value = null
         _isSuccess.value = false

@@ -20,6 +20,10 @@ class SmartCampusApplication : Application() {
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel("campus_updates", name, importance).apply {
                 description = descriptionText
+                enableLights(true)
+                enableVibration(true)
+                setShowBadge(true)
+                lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
             }
             val notificationManager: NotificationManager =
                 getSystemService(NOTIFICATION_SERVICE) as NotificationManager
