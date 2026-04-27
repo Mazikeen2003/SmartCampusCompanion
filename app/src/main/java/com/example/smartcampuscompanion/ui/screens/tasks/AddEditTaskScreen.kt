@@ -184,6 +184,38 @@ fun AddEditTaskScreen(
                     Text(uiState.dueTime.ifEmpty { "Select Time" }, style = MaterialTheme.typography.bodyMedium)
                 }
             }
+
+            // Admin Assignment Section
+            if (uiState.userRole == "admin") {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                
+                Text(
+                    "Task Assignment",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.error, // Management red
+                    fontWeight = FontWeight.Bold
+                )
+
+                OutlinedTextField(
+                    value = uiState.assignedTo,
+                    onValueChange = { viewModel.handleIntent(TaskIntent.UpdateAssignedTo(it)) },
+                    label = { Text("Assign To (Email or 'all')") },
+                    placeholder = { Text("Enter student email or 'all'") },
+                    leadingIcon = { Icon(Icons.Default.PersonAdd, contentDescription = null) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.large,
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.error
+                    )
+                )
+                
+                Text(
+                    "Note: Type 'all' to assign this task to every campus student.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             
             Spacer(modifier = Modifier.height(32.dp))
             
