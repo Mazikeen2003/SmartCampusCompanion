@@ -4,6 +4,7 @@ import com.example.smartcampuscompanion.data.entity.Announcement
 import com.example.smartcampuscompanion.data.entity.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.Filter
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -63,20 +64,59 @@ class FirebaseDataSource @Inject constructor(
             .await()
     }
 
-    suspend fun getTasks(): List<Task> {
+    suspend fun getTasks(userEmail: String, isAdmin: Boolean): List<Task> {
         return try {
-            firestore.collection("tasks")
-                .get()
-                .await()
-                .documents
-                .mapNotNull { doc ->
-                    val task = doc.toObject(Task::class.java)
-                    task?.copy(id = doc.id.toIntOrNull() ?: task.id)
-                }
+            val collection = firestore.collection("tasks")
+            val query = if (isAdmin) {
+                collection
+            } else {
+                collection.where(
+                    Filter.or(
+                        Filter.equalTo("ownerEmail", userEmail),
+                        Filter.equalTo("assignedTo", userEmail),
+                        Filter.equalTo("assignedTo", "all")
+                    )
+                )
+            }
+            
+            query.get().await().documents.mapNotNull { doc ->
+                val task = doc.toObject(Task::class.java)
+                task?.copy(id = doc.id.toIntOrNull() ?: task.id)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()
         }
+    }
+
+    fun getTasksFlow(userEmail: String, isAdmin: Boolean): Flow<List<Task>> = callbackFlow {
+        val collection = firestore.collection("tasks")
+        val query = if (isAdmin) {
+            collection
+        } else {
+            collection.where(
+                Filter.or(
+                    Filter.equalTo("ownerEmail", userEmail),
+                    Filter.equalTo("assignedTo", userEmail),
+                    Filter.equalTo("assignedTo", "all")
+                )
+            )
+        }
+
+        val subscription = query.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            if (snapshot != null) {
+                val tasks = snapshot.documents.mapNotNull { doc ->
+                    val task = doc.toObject(Task::class.java)
+                    task?.copy(id = doc.id.toIntOrNull() ?: task.id)
+                }
+                trySend(tasks)
+            }
+        }
+        awaitClose { subscription.remove() }
     }
 
     suspend fun saveTask(task: Task) {

@@ -104,8 +104,11 @@ fun TaskListScreen(
                         )
                     }
                     items(tasksForDate, key = { it.id }) { task ->
+                        val isAdmin = uiState.userRole == "admin"
                         TaskItem(
                             task = task,
+                            isAdmin = isAdmin,
+                            canEditDelete = isAdmin || !task.createdByAdmin,
                             onDelete = { viewModel.handleIntent(TaskIntent.DeleteTask(task)) },
                             onEdit = { onEditClick(task.id) }
                         ) { viewModel.handleIntent(TaskIntent.ToggleTaskCompletion(task)) }
@@ -157,6 +160,8 @@ fun EmptyTasksView(padding: PaddingValues) {
 @Composable
 fun TaskItem(
     task: Task,
+    isAdmin: Boolean = false,
+    canEditDelete: Boolean = true,
     onDelete: () -> Unit,
     onEdit: () -> Unit,
     onToggle: () -> Unit
@@ -188,6 +193,22 @@ fun TaskItem(
             Spacer(modifier = Modifier.width(12.dp))
             
             Column(modifier = Modifier.weight(1f)) {
+                if (isAdmin || task.createdByAdmin) {
+                    val assignedText = if (task.createdByAdmin) {
+                        if (task.assignedTo == "all") "OFFICIAL CAMPUS TASK" else "ASSIGNED BY ADMIN"
+                    } else {
+                        "PRIVATE TASK"
+                    }
+                    
+                    Text(
+                        text = assignedText,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = if (task.createdByAdmin) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
+
                 Text(
                     text = task.title,
                     style = MaterialTheme.typography.titleMedium,
@@ -224,13 +245,23 @@ fun TaskItem(
                 }
             }
 
-            Row {
-                IconButton(onClick = onEdit) {
-                    Icon(Icons.Default.Edit, contentDescription = "Edit", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+            if (canEditDelete) {
+                Row {
+                    IconButton(onClick = onEdit) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                    }
+                    IconButton(onClick = onDelete) {
+                        Icon(Icons.Default.DeleteOutline, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
+                    }
                 }
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.DeleteOutline, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
-                }
+            } else {
+                // Visual indicator that this task is locked
+                Icon(
+                    imageVector = Icons.Default.Lock,
+                    contentDescription = "Locked",
+                    tint = MaterialTheme.colorScheme.outlineVariant,
+                    modifier = Modifier.size(20.dp).padding(end = 8.dp)
+                )
             }
         }
     }

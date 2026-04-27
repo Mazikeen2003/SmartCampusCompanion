@@ -5,6 +5,7 @@ import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.smartcampuscompanion.data.entity.User
+import com.example.smartcampuscompanion.data.repository.TaskRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
@@ -21,6 +22,7 @@ class AuthViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
     @ApplicationContext private val context: Context,
+    private val taskRepository: TaskRepository
 ) : ViewModel() {
     private val sharedPreferences = context.getSharedPreferences("user_session", Context.MODE_PRIVATE)
 
@@ -87,7 +89,23 @@ class AuthViewModel @Inject constructor(
                 }
 
                 // 3. Fetch Role bago sabihing Success
-                fetchAndSetUserRole(email)
+                val document = firestore.collection("users").document(email).get().await()
+                if (!document.exists()) {
+                    // Create basic profile if missing
+                    val userData = hashMapOf("email" to email, "role" to "student")
+                    firestore.collection("users").document(email).set(userData).await()
+                    _userRole.value = "student"
+                } else {
+                    _userRole.value = document.getString("role") ?: "student"
+                }
+                
+                try {
+                    taskRepository.refreshUserSession()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                
+                _isSuccess.value = true
 
             } catch (e: Exception) {
                 _isLoading.value = false
@@ -117,6 +135,13 @@ class AuthViewModel @Inject constructor(
                     } else {
                         _userRole.value = doc.getString("role") ?: "student"
                     }
+                    
+                    try {
+                        taskRepository.refreshUserSession()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                    
                     _isSuccess.value = true
                 }
             } catch (e: Exception) {
@@ -124,20 +149,6 @@ class AuthViewModel @Inject constructor(
             } finally {
                 _isLoading.value = false
             }
-        }
-    }
-
-    private suspend fun fetchAndSetUserRole(email: String) {
-        try {
-            val document = firestore.collection("users").document(email).get().await()
-            _userRole.value = document.getString("role") ?: "student"
-            _isSuccess.value = true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            _userRole.value = "student"
-            _isSuccess.value = true
-        } finally {
-            _isLoading.value = false
         }
     }
 
@@ -198,6 +209,15 @@ class AuthViewModel @Inject constructor(
         firebaseAuth.signOut()
         _userRole.value = null
         _isSuccess.value = false
+        
+        viewModelScope.launch {
+            try {
+                taskRepository.clearLocalTasks()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
         sharedPreferences.edit {
             remove("user_email")
             // Note: Hindi natin tinatanggal ang remembered_user para sa "Remember Me" feature
