@@ -15,9 +15,8 @@ sealed class TaskIntent {
     data class UpdateDescription(val description: String) : TaskIntent()
     data class UpdateDate(val date: String) : TaskIntent()
     data class UpdateTime(val time: String) : TaskIntent()
+    data class UpdateAssignedTo(val assignedTo: String) : TaskIntent()
     data class LoadTaskForEdit(val taskId: Int) : TaskIntent()
-
-
 
     data object SaveTask : TaskIntent()
     data object ClearForm : TaskIntent()
@@ -31,6 +30,7 @@ data class TaskState(
     val tasks: List<Task> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
+    val userRole: String = "student",
 
     // Form State
     val editingTaskId: Int? = null,
@@ -38,6 +38,7 @@ data class TaskState(
     val description: String = "",
     val dueDate: String = "",
     val dueTime: String = "",
+    val assignedTo: String = "",
     val isFormValid: Boolean = false,
     val isSaved: Boolean = false
 )

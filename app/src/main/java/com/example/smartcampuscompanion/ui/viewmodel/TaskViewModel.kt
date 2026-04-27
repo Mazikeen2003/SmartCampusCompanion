@@ -7,15 +7,20 @@ import com.example.smartcampuscompanion.data.repository.TaskRepository
 import com.example.smartcampuscompanion.ui.screens.tasks.TaskEffect
 import com.example.smartcampuscompanion.ui.screens.tasks.TaskIntent
 import com.example.smartcampuscompanion.ui.screens.tasks.TaskState
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-// Fetches remote data on initialization
+
 @HiltViewModel
 class TaskViewModel @Inject constructor(
     private val repository: TaskRepository,
+    private val firestore: FirebaseFirestore,
+    private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TaskState())
@@ -25,8 +30,22 @@ class TaskViewModel @Inject constructor(
     val effect = _effect.receiveAsFlow()
 
     init {
+        fetchUserRole()
         handleIntent(TaskIntent.LoadTasks)
         refresh()
+    }
+
+    private fun fetchUserRole() {
+        val email = firebaseAuth.currentUser?.email ?: return
+        viewModelScope.launch {
+            try {
+                val doc = firestore.collection("users").document(email).get().await()
+                val role = doc.getString("role") ?: "student"
+                _uiState.update { it.copy(userRole = role) }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     fun handleIntent(intent: TaskIntent) {
@@ -38,6 +57,7 @@ class TaskViewModel @Inject constructor(
             is TaskIntent.UpdateDescription -> updateDescription(intent.description)
             is TaskIntent.UpdateDate -> updateDate(intent.date)
             is TaskIntent.UpdateTime -> updateTime(intent.time)
+            is TaskIntent.UpdateAssignedTo -> updateAssignedTo(intent.assignedTo)
             is TaskIntent.LoadTaskForEdit -> loadTaskForEdit(intent.taskId)
             is TaskIntent.SaveTask -> saveTask()
             is TaskIntent.ClearForm -> clearForm()
@@ -85,7 +105,6 @@ class TaskViewModel @Inject constructor(
         }
     }
 
-    // Helper function para sa validation para "Clean" tignan
     private fun validateForm(title: String, date: String, time: String): Boolean {
         return title.isNotBlank() && date.isNotBlank() && time.isNotBlank()
     }
@@ -121,6 +140,10 @@ class TaskViewModel @Inject constructor(
         }
     }
 
+    private fun updateAssignedTo(assignedTo: String) {
+        _uiState.update { it.copy(assignedTo = assignedTo) }
+    }
+
     private fun loadTaskForEdit(taskId: Int) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -133,6 +156,7 @@ class TaskViewModel @Inject constructor(
                         description = task.description,
                         dueDate = task.dueDate,
                         dueTime = task.dueTime,
+                        assignedTo = task.assignedTo,
                         isFormValid = true,
                         isLoading = false
                     )
@@ -150,13 +174,25 @@ class TaskViewModel @Inject constructor(
             try {
                 _uiState.update { it.copy(isLoading = true) }
                 val currentState = _uiState.value
+                val email = firebaseAuth.currentUser?.email ?: ""
+                
+                // If student, auto-assign to self. If admin, use the field.
+                val finalAssignedTo = if (currentState.userRole == "admin") {
+                    currentState.assignedTo.ifEmpty { email }
+                } else {
+                    email
+                }
+
                 val task = Task(
                     id = currentState.editingTaskId ?: 0,
                     title = currentState.title,
                     description = currentState.description,
                     dueDate = currentState.dueDate,
                     dueTime = currentState.dueTime,
-                    isCompleted = false // Default or retain existing state if editing
+                    isCompleted = false,
+                    ownerEmail = email,
+                    assignedTo = finalAssignedTo,
+                    createdByAdmin = currentState.userRole == "admin"
                 )
 
                 if (currentState.editingTaskId == null) {
@@ -181,6 +217,7 @@ class TaskViewModel @Inject constructor(
                 description = "",
                 dueDate = "",
                 dueTime = "",
+                assignedTo = "",
                 isFormValid = false,
                 isSaved = false,
                 error = null
